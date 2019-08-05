@@ -177,3 +177,5 @@ Temporary Items
 .apdisk
 
 # End of https://www.gitignore.io/api/macos
+
+./hyperledger-fabric/dev-server/*.*
