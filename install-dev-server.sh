@@ -5,7 +5,7 @@ tar -xvf fabric-dev-servers.tar.gz
 rm -f fabric-dev-servers.tar.gz
 export FABRIC_VERSION=hlfv11
 
-chmod +x downloadFabric.sh
+chmod +x *.sh
 bash downloadFabric.sh
 
 cd ../../
