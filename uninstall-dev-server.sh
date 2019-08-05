@@ -1,3 +1,4 @@
 cd ./hyperledger-fabric/dev-server
-rm -f !(".gitkeep")
+shopt -s extglob
+rm -rf !(.gitkeep)
 cd ../../
