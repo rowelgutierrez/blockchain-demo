@@ -1,15 +1,19 @@
 cd ./hyperledger-fabric/dev-server
 
-export FABRIC_VERSION=hlfv11
-bash startFabric.sh
+if [ ! -f run.pid ]; then
+    export FABRIC_VERSION=hlfv11
+    bash startFabric.sh
+fi
 
-FILE=DevServer_connection.json
-if [ -f "$FILE" ]; then
-    echo "$FILE already exists!"
+PEER_CARD=DevServer_connection.json
+if [ -f "$PEER_CARD" ]; then
+    echo "$PEER_CARD already exists!"
 else
     bash createPeerAdminCard.sh
 fi
 
-nohup composer-playground > /dev/null 2>&1 & echo $! > run.pid
+if [ ! -f run.pid ]; then
+    nohup composer-playground > /dev/null 2>&1 & echo $! > run.pid
+fi
 
 cd ../../

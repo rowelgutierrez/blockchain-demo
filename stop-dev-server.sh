@@ -1,8 +1,12 @@
 cd ./hyperledger-fabric/dev-server
 
-kill -9 $(cat run.pid)
-rm -f run.pid
+if [ ! -f run.pid ]; then
+    echo "Server is already stopped!"
+else
+    kill -9 $(cat run.pid)
+    rm -f run.pid
 
-bash stopFabric.sh
+    bash stopFabric.sh
+fi
 
 cd ../../
