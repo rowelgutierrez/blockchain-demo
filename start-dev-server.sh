@@ -1,7 +1,8 @@
 cd ./hyperledger-fabric/dev-server
 
+export FABRIC_VERSION=hlfv12
+
 if [ ! -f run.pid ]; then
-    export FABRIC_VERSION=hlfv11
     bash startFabric.sh
 fi
 
@@ -13,7 +14,7 @@ else
 fi
 
 if [ ! -f run.pid ]; then
-    nohup composer-playground > /dev/null 2>&1 & echo $! > run.pid
+    # nohup composer-playground > /dev/null 2>&1 & echo $! > run.pid
 fi
 
 cd ../../

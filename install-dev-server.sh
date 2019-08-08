@@ -3,7 +3,7 @@ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/pack
 tar -xvf fabric-dev-servers.tar.gz
 
 rm -f fabric-dev-servers.tar.gz
-export FABRIC_VERSION=hlfv11
+export FABRIC_VERSION=hlfv12
 
 chmod +x *.sh
 bash downloadFabric.sh

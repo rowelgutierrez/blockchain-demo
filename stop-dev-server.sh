@@ -6,6 +6,8 @@ else
     kill -9 $(cat run.pid)
     rm -f run.pid
 
+    export FABRIC_VERSION=hlfv12
+
     bash stopFabric.sh
 fi
 

@@ -18,15 +18,30 @@
 
 namespace dev.rowelgutierrez.hyperledgerfabric.usermanagement
 
-participant SampleParticipant identified by participantId {
-  o String participantId
+participant User identified by email {
+  o String email
   o String firstName
   o String lastName
 }
 
+asset Wallet identified by walletId {
+  o String walletId
+  --> User user
+  o Double balance
+}
+
+transaction Invite {
+  --> Wallet inviterWallet
+  o String firstName
+  o String lastName
+  o String email
+  o Double reward
+}
+
+/**
 asset SampleAsset identified by assetId {
   o String assetId
-  --> SampleParticipant owner
+  --> User owner
   o String value
 }
 
@@ -40,3 +55,4 @@ event SampleEvent {
   o String oldValue
   o String newValue
 }
+*/

@@ -19,25 +19,53 @@
 
 /**
  * Sample transaction
- * @param {dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleTransaction} sampleTransaction
+ * @param {dev.rowelgutierrez.hyperledgerfabric.usermanagement.Invite} tx
  * @transaction
  */
-async function sampleTransaction(tx) {
-    // Save the old value of the asset.
-    const oldValue = tx.asset.value;
+async function invite(tx) {
+    // const NS = 'dev.rowelgutierrez.hyperledgerfabric.usermanagement';
 
-    // Update the asset with the new value.
-    tx.asset.value = tx.newValue;
+    // Add new participant/user
+    let user = getFactory().newResource('dev.rowelgutierrez.hyperledgerfabric.usermanagement', 'User', tx.email);
+    user.firstName = tx.firstName;
+    user.lastName = tx.lastName;
+    await getParticipantRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement').add(user);
 
-    // Get the asset registry for the asset.
-    const assetRegistry = await getAssetRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleAsset');
-    // Update the asset in the asset registry.
-    await assetRegistry.update(tx.asset);
+    // Create new wallet for the new user
+    let newUserWallet = getFactory().newResource('dev.rowelgutierrez.hyperledgerfabric.usermanagement', 'Wallet', tx.email);
+    newUserWallet.user = user;
+    newUserWallet.balance = 0.0;
 
-    // Emit an event for the modified asset.
-    let event = getFactory().newEvent('dev.rowelgutierrez.hyperledgerfabric.usermanagement', 'SampleEvent');
-    event.asset = tx.asset;
-    event.oldValue = oldValue;
-    event.newValue = tx.newValue;
-    emit(event);
+    // Update the wallet of the inviter
+    tx.inviterWallet.balance += 10.0;
+
+    // Add/Update assets
+    return getAssetRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement.Wallet')
+    .then(function (assetRegistry) {
+        return assetRegistry.add(newUserWallet);
+    })
+    .then(function () {
+        return getAssetRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement.Wallet');
+    })
+    .then(function (assetRegistry) {
+        return assetRegistry.update(tx.inviterWallet);
+    })
+
+    // // Save the old value of the asset.
+    // const oldValue = tx.asset.value;
+
+    // // Update the asset with the new value.
+    // tx.asset.value = tx.newValue;
+
+    // // Get the asset registry for the asset.
+    // const assetRegistry = await getAssetRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleAsset');
+    // // Update the asset in the asset registry.
+    // await assetRegistry.update(tx.asset);
+
+    // // Emit an event for the modified asset.
+    // let event = getFactory().newEvent('dev.rowelgutierrez.hyperledgerfabric.usermanagement', 'SampleEvent');
+    // event.asset = tx.asset;
+    // event.oldValue = oldValue;
+    // event.newValue = tx.newValue;
+    // emit(event);
 }

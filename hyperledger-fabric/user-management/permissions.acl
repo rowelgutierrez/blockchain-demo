@@ -17,7 +17,7 @@
  */
 rule EverybodyCanReadEverything {
     description: "Allow all participants read access to all resources"
-    participant: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleParticipant"
+    participant: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.User"
     operation: READ
     resource: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.*"
     action: ALLOW
@@ -25,17 +25,17 @@ rule EverybodyCanReadEverything {
 
 rule EverybodyCanSubmitTransactions {
     description: "Allow all participants to submit transactions"
-    participant: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleParticipant"
+    participant: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.User"
     operation: CREATE
-    resource: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleTransaction"
+    resource: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.Invite"
     action: ALLOW
 }
 
 rule OwnerHasFullAccessToTheirAssets {
     description: "Allow all participants full access to their assets"
-    participant(p): "dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleParticipant"
+    participant(p): "dev.rowelgutierrez.hyperledgerfabric.usermanagement.User"
     operation: ALL
-    resource(r): "dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleAsset"
+    resource(r): "dev.rowelgutierrez.hyperledgerfabric.usermanagement.Wallet"
     condition: (r.owner.getIdentifier() === p.getIdentifier())
     action: ALLOW
 }
