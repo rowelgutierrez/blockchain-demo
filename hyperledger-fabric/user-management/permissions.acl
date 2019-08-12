@@ -17,35 +17,35 @@
  */
 rule EverybodyCanReadEverything {
     description: "Allow all participants read access to all resources"
-    participant: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.User"
+    participant: "org.example.basic.User"
     operation: READ
-    resource: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.*"
+    resource: "org.example.basic.*"
     action: ALLOW
 }
 
 rule EverybodyCanSubmitTransactions {
     description: "Allow all participants to submit transactions"
-    participant: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.User"
+    participant: "org.example.basic.User"
     operation: CREATE
-    resource: "dev.rowelgutierrez.hyperledgerfabric.usermanagement.Invite"
+    resource: "org.example.basic.Invite"
     action: ALLOW
 }
 
 rule OwnerHasFullAccessToTheirAssets {
     description: "Allow all participants full access to their assets"
-    participant(p): "dev.rowelgutierrez.hyperledgerfabric.usermanagement.User"
+    participant(p): "org.example.basic.User"
     operation: ALL
-    resource(r): "dev.rowelgutierrez.hyperledgerfabric.usermanagement.Wallet"
+    resource(r): "org.example.basic.Wallet"
     condition: (r.owner.getIdentifier() === p.getIdentifier())
     action: ALLOW
 }
 
 rule SystemACL {
-  description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
-  operation: ALL
-  resource: "org.hyperledger.composer.system.**"
-  action: ALLOW
+    description: "System ACL to permit all access"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
 }
 
 rule NetworkAdminUser {

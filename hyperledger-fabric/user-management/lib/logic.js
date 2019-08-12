@@ -12,27 +12,49 @@
  * limitations under the License.
  */
 
-'use strict';
-/**
- * Write your transction processor functions here
- */
+/* global getAssetRegistry getFactory emit */
 
 /**
- * Sample transaction
- * @param {dev.rowelgutierrez.hyperledgerfabric.usermanagement.Invite} tx
+ * Sample transaction processor function.
+ * @param {org.example.basic.Invite} tx The sample transaction instance.
  * @transaction
  */
-async function invite(tx) {
-    // const NS = 'dev.rowelgutierrez.hyperledgerfabric.usermanagement';
+async function sampleTransaction(tx) {  // eslint-disable-line no-unused-vars
+
+    const uniqueId = () => {
+        const firstItem = {
+            value: "0"
+        };
+        /*length can be increased for lists with more items.*/
+        let counter = "123456789".split('')
+            .reduce((acc, curValue, curIndex, arr) => {
+                const curObj = {};
+                curObj.value = curValue;
+                curObj.prev = acc;
+
+                return curObj;
+            }, firstItem);
+        firstItem.prev = counter;
+
+        return function () {
+            let now = Date.now();
+            if (typeof performance === "object" && typeof performance.now === "function") {
+                now = performance.now().toString().replace('.', '');
+            }
+            counter = counter.prev;
+            return `${now}${Math.random().toString(16).substr(2)}${counter.value}`;
+        }
+    };
 
     // Add new participant/user
-    let user = getFactory().newResource('dev.rowelgutierrez.hyperledgerfabric.usermanagement', 'User', tx.email);
+    let user = getFactory().newResource('org.example.basic', 'User', tx.email);
     user.firstName = tx.firstName;
     user.lastName = tx.lastName;
-    await getParticipantRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement').add(user);
+    let participantReg = await getParticipantRegistry('org.example.basic.User');
+    await participantReg.add(user);
 
     // Create new wallet for the new user
-    let newUserWallet = getFactory().newResource('dev.rowelgutierrez.hyperledgerfabric.usermanagement', 'Wallet', tx.email);
+    let newUserWallet = getFactory().newResource('org.example.basic', 'Wallet', uniqueId()());
     newUserWallet.user = user;
     newUserWallet.balance = 0.0;
 
@@ -40,32 +62,14 @@ async function invite(tx) {
     tx.inviterWallet.balance += 10.0;
 
     // Add/Update assets
-    return getAssetRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement.Wallet')
+    return getAssetRegistry('org.example.basic.Wallet')
     .then(function (assetRegistry) {
         return assetRegistry.add(newUserWallet);
     })
     .then(function () {
-        return getAssetRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement.Wallet');
+        return getAssetRegistry('org.example.basic.Wallet');
     })
     .then(function (assetRegistry) {
         return assetRegistry.update(tx.inviterWallet);
-    })
-
-    // // Save the old value of the asset.
-    // const oldValue = tx.asset.value;
-
-    // // Update the asset with the new value.
-    // tx.asset.value = tx.newValue;
-
-    // // Get the asset registry for the asset.
-    // const assetRegistry = await getAssetRegistry('dev.rowelgutierrez.hyperledgerfabric.usermanagement.SampleAsset');
-    // // Update the asset in the asset registry.
-    // await assetRegistry.update(tx.asset);
-
-    // // Emit an event for the modified asset.
-    // let event = getFactory().newEvent('dev.rowelgutierrez.hyperledgerfabric.usermanagement', 'SampleEvent');
-    // event.asset = tx.asset;
-    // event.oldValue = oldValue;
-    // event.newValue = tx.newValue;
-    // emit(event);
+    });
 }

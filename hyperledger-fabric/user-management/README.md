@@ -1,3 +1,3 @@
-# user-management
+# tutorial-network
 
-Hyperledger Prototype
+Sample business network

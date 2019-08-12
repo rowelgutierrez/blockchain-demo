@@ -13,10 +13,9 @@
  */
 
 /**
- * Write your model definitions here
+ * Sample business network definition.
  */
-
-namespace dev.rowelgutierrez.hyperledgerfabric.usermanagement
+namespace org.example.basic
 
 participant User identified by email {
   o String email
@@ -37,22 +36,3 @@ transaction Invite {
   o String email
   o Double reward
 }
-
-/**
-asset SampleAsset identified by assetId {
-  o String assetId
-  --> User owner
-  o String value
-}
-
-transaction SampleTransaction {
-  --> SampleAsset asset
-  o String newValue
-}
-
-event SampleEvent {
-  --> SampleAsset asset
-  o String oldValue
-  o String newValue
-}
-*/
