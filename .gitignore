@@ -181,3 +181,7 @@ Temporary Items
 
 # Ignore server binaries
 hyperledger-fabric/dev-server/*
+
+# Hyperledger Composer
+*.bna
+*.card

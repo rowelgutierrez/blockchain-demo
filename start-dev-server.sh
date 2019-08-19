@@ -14,7 +14,7 @@ else
 fi
 
 if [ ! -f run.pid ]; then
-    # nohup composer-playground > /dev/null 2>&1 & echo $! > run.pid
+    nohup composer-playground > /dev/null 2>&1 & echo $! > run.pid
 fi
 
 cd ../../
