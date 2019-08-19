@@ -1,6 +1,6 @@
-cd hyperledger-fabric/user-management
+cd hyperledger/user-management
 
-export FABRIC_VERSION=hlfv12
+# export FABRIC_VERSION=hlfv12
 
 composer archive create -t dir -n .
 
