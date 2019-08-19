@@ -1,6 +1,5 @@
 cd ./hyperledger/fabric
 
-# export FABRIC_VERSION=hlfv12
 export FABRIC_START_TIMEOUT=15
 
 if [ ! -f run.pid ]; then

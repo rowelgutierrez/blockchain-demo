@@ -1,7 +1,5 @@
 cd hyperledger/user-management
 
-# export FABRIC_VERSION=hlfv12
-
 composer archive create -t dir -n .
 
 composer network install --card PeerAdmin@hlfv1 --archiveFile user-management@0.0.1.bna

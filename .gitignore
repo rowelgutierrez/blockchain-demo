@@ -182,3 +182,5 @@ Temporary Items
 # Hyperledger Composer
 *.bna
 *.card
+run.pid
+DevServer_connection.json

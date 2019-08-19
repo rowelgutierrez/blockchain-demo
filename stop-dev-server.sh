@@ -5,7 +5,6 @@ if [ -f run.pid ]; then
     rm -f run.pid
 fi
 
-# export FABRIC_VERSION=hlfv12
 bash stopFabric.sh
 
 cd ../../
