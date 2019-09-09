@@ -180,7 +180,5 @@ Temporary Items
 # End of https://www.gitignore.io/api/macos
 
 # Hyperledger Composer
-*.bna
-*.card
-run.pid
-DevServer_connection.json
+crypto-config
+channel-artifacts
