@@ -43,14 +43,11 @@ function replacePrivateKey() {
     PRIV_KEY=$(ls *_sk)
     cd "$CURRENT_DIR"
 
-    echo "jfkslajdlfjasldjflakjfdljaslkdfjalskjdflkasjdlkfjasldkfjalskjflksdjflkasjdlkfjaslkjfdlksjd"
-    echo "${OPTS}"
-    echo "${PRIV_KEY}"
-    sed $OPTS "s/CA1_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose.yaml
+    sed $OPTS "s/CA1_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose.yml
 
     # If MacOSX, remove the temporary backup of the docker-compose file
     if [ "$ARCH" == "Darwin" ]; then
-        rm docker-compose.yamlt
+        rm docker-compose.ymlt
     fi
 }
 
@@ -69,7 +66,8 @@ function generateChannelArtifacts() {
     echo "CONSENSUS_TYPE="$CONSENSUS_TYPE
     set -x
 
-    configtxgen -profile OneOrgOrdererGenesis -channelID userschannel -outputBlock ./channel-artifacts/genesis.block
+    configtxgen -profile OneOrgOrdererGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
+    # configtxgen -profile OneOrgOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
 
     # if [ "$CONSENSUS_TYPE" == "solo" ]; then
     #     configtxgen -profile TwoOrgsOrdererGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block

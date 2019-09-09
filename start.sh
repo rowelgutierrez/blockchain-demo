@@ -7,14 +7,15 @@
 # Exit on first error, print all commands.
 set -ev
 
-cd ./hyperledger/fabric-network/scripts
+cd ./hyperledger/fabric-network
 
 # don't rewrite paths for Windows Git Bash users
 export MSYS_NO_PATHCONV=1
 
 docker-compose down
 
-docker-compose up -d
+# docker-compose up -d
+docker-compose -f docker-compose.yml up -d ca.imfreemobile.com orderer.imfreemobile.com peer0.org1.imfreemobile.com couchdb
 docker ps -a
 
 # wait for Hyperledger Fabric to start
@@ -28,4 +29,4 @@ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/h
 # Join peer0.org1.imfreemobile.com to the channel.
 docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.imfreemobile.com/msp" peer0.org1.imfreemobile.com peer channel join -b userschannel.block
 
-cd ../../../
+cd ../../
