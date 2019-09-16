@@ -18,8 +18,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-!lib/*.js
+lib/*
 lib64/
 parts/
 sdist/
