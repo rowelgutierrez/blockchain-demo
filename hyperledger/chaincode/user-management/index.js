@@ -1,6 +1,8 @@
 'use strict';
 
-const FabCar = require('./model/user-management');
+const User = require('./lib/user');
+
+console.log(User);
 
 module.exports.User = User;
 module.exports.contracts = [ User ];

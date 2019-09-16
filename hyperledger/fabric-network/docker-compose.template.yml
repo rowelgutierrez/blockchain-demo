@@ -124,6 +124,7 @@ services:
         - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
         - ./scripts/:/var/hyperledger/scripts
         - ./config:/var/hyperledger/config
+        - ./../sample-app/:/var/hyperledger/sample-app
     networks:
         - basic
     depends_on:

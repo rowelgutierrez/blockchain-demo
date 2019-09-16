@@ -13,7 +13,7 @@
         }
     },
     "channels": {
-        "mychannel": {
+        "userschannel": {
             "orderers": [
                 "orderer.imfreemobile.com"
             ],
