@@ -11,3 +11,10 @@ if [[ $string != *"Invalid chain ID, userschannel"* ]]; then
 else
     echo "Channel userschannel already exists!"
 fi
+
+# Install node_modules
+cd /opt/gopath/src/github.com/user-management
+npm install
+
+# Register admin user
+node enrollAdmin.js
