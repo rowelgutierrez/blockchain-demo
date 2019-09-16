@@ -18,3 +18,4 @@ npm install
 
 # Register admin user
 node enrollAdmin.js
+node registerSampleUser.js

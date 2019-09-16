@@ -22,7 +22,8 @@ const enroll = async () => {
         const ca = new FabricCAServices(caURL);
 
         // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
+        // const walletPath = path.join(process.cwd(), 'wallet');
+        const walletPath = path.join('/', 'var', 'hyperledger', 'wallet');
         const wallet = new FileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 

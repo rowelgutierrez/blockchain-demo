@@ -181,6 +181,7 @@ Temporary Items
 # Hyperledger Composer
 crypto-config
 channel-artifacts
+hyperledger/chaincode/*/wallet
 
 # NodeJS
 node_modules
