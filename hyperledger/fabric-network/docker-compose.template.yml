@@ -123,6 +123,7 @@ services:
         - ./crypto-config:/var/hyperledger/fabric/peer/crypto/
         - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
         - ./scripts/:/var/hyperledger/scripts
+        - ./config:/var/hyperledger/config
     networks:
         - basic
     depends_on:

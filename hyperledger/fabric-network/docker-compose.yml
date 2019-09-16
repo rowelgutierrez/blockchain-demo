@@ -15,10 +15,10 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.imfreemobile.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/2fa37b5f7b3aba7511c39729b8bb3256c1846aae6adf4866a6e9d05c3152b1fa_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/fa4cb4a9763756f9ea2883e45f98ea93f48e81d654db8b0196fad8cd2ac53673_sk
     ports:
       - "7054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/2fa37b5f7b3aba7511c39729b8bb3256c1846aae6adf4866a6e9d05c3152b1fa_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/fa4cb4a9763756f9ea2883e45f98ea93f48e81d654db8b0196fad8cd2ac53673_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/org1.imfreemobile.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.imfreemobile.com
@@ -123,6 +123,7 @@ services:
         - ./crypto-config:/var/hyperledger/fabric/peer/crypto/
         - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
         - ./scripts/:/var/hyperledger/scripts
+        - ./config:/var/hyperledger/config
     networks:
         - basic
     depends_on:

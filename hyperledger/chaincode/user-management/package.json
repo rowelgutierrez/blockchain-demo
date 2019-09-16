@@ -1,7 +1,7 @@
 {
     "name": "user-management",
     "version": "1.0.0",
-    "description": "Store User info",
+    "description": "User info",
     "main": "index.js",
     "engines": {
         "node": ">=8",
@@ -18,7 +18,9 @@
     "license": "Apache-2.0",
     "dependencies": {
         "fabric-contract-api": "~1.4.0",
-        "fabric-shim": "~1.4.0"
+        "fabric-shim": "~1.4.0",
+        "fabric-ca-client": "~1.4.0",
+        "fabric-network": "~1.4.0"
     },
     "devDependencies": {
         "chai": "^4.1.2",

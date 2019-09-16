@@ -181,3 +181,6 @@ Temporary Items
 # Hyperledger Composer
 crypto-config
 channel-artifacts
+
+# NodeJS
+node_modules
