@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metdata:
+  name: ca-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: ca.imfreemobile.com
+  template:
+    metadata:
+      labels:
+        component: ca.imfreemobile.com
+    spec:
+      # volumes:
+      #   - name: couchdb-storage
+      #     persistentVolumeClaim:
+      #       claimName: couchdb-persistent-volume-claim
+      containers:
+        - name: ca.imfreemobile.com
+          image: hyperledger/fabric-ca:1.4.1
+          ports:
+            - containerPort: 7054
+          # volumeMounts:
+          #   - name: couchdb-storage
+          #     mountPath: <COUCHDB_DATA_DIR>
+          #     subPath: couchdb
+          env:
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: ca.imfreemobile.com
+            - name: FABRIC_CA_SERVER_CA_CERTFILE
+              value: /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem
+            - name: FABRIC_CA_SERVER_CA_KEYFILE
+              value: /etc/hyperledger/fabric-ca-server-config/CA1_PRIVATE_KEY

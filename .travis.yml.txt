@@ -1,0 +1,7 @@
+sudo: required
+services:
+  - docker
+
+# Execute cmds before test/deploy (like building images)
+# before-install:
+#   - docker build -t rowelgutierrez/sample-tag-name -f Dockerfile.dev .

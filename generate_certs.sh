@@ -1,5 +1,5 @@
 cd ./hyperledger/fabric-network/scripts
 
-bash setup_certs.sh
+bash generate_certs.sh
 
 cd ../../../

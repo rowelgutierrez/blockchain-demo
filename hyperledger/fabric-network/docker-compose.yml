@@ -15,10 +15,10 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.imfreemobile.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/b7e14f430ce809a8d0e472558610838c7bdf4cbe596612704ada6109245df91b_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/2fa37b5f7b3aba7511c39729b8bb3256c1846aae6adf4866a6e9d05c3152b1fa_sk
     ports:
       - "7054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/b7e14f430ce809a8d0e472558610838c7bdf4cbe596612704ada6109245df91b_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/2fa37b5f7b3aba7511c39729b8bb3256c1846aae6adf4866a6e9d05c3152b1fa_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/org1.imfreemobile.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.imfreemobile.com
@@ -110,18 +110,19 @@ services:
       - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=peer0.org1.imfreemobile.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
+      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    working_dir: /var/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
         - ./../chaincode/:/opt/gopath/src/github.com/
-        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
-        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+        - ./crypto-config:/var/hyperledger/fabric/peer/crypto/
+        - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
+        - ./scripts/:/var/hyperledger/scripts
     networks:
         - basic
     depends_on:
