@@ -1,0 +1,90 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.18.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cli
+  name: cli
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: cli
+    spec:
+      containers:
+      - args:
+        - /bin/bash
+        env:
+        - name: CORE_CHAINCODE_KEEPALIVE
+          value: "10"
+        - name: CORE_PEER_ADDRESS
+          value: peer0.org1.imfreemobile.com:7051
+        - name: CORE_PEER_ID
+          value: cli
+        - name: CORE_PEER_LOCALMSPID
+          value: Org1MSP
+        - name: CORE_PEER_MSPCONFIGPATH
+          value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
+        - name: CORE_PEER_TLS_CERT_FILE
+          value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.crt
+        - name: CORE_PEER_TLS_KEY_FILE
+          value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.key
+        - name: CORE_PEER_TLS_ROOTCERT_FILE
+          value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
+        - name: CORE_VM_ENDPOINT
+          value: unix:///host/var/run/docker.sock
+        - name: FABRIC_LOGGING_SPEC
+          value: info
+        - name: GOPATH
+          value: /opt/gopath
+        image: hyperledger/fabric-tools:1.4.1
+        name: cli
+        resources: {}
+        tty: true
+        volumeMounts:
+        - mountPath: /host/var/run/
+          name: cli-claim0
+        - mountPath: /opt/gopath/src/github.com/
+          name: cli-claim1
+        - mountPath: /var/hyperledger/fabric/peer/crypto/
+          name: cli-claim2
+        - mountPath: /var/hyperledger/fabric/peer/channel-artifacts
+          name: cli-claim3
+        - mountPath: /var/hyperledger/scripts
+          name: cli-claim4
+        - mountPath: /var/hyperledger/config
+          name: cli-claim5
+        - mountPath: /var/hyperledger/sample-app
+          name: cli-claim6
+        workingDir: /var/hyperledger/fabric/peer
+      restartPolicy: Always
+      volumes:
+      - name: cli-claim0
+        persistentVolumeClaim:
+          claimName: cli-claim0
+      - name: cli-claim1
+        persistentVolumeClaim:
+          claimName: cli-claim1
+      - name: cli-claim2
+        persistentVolumeClaim:
+          claimName: cli-claim2
+      - name: cli-claim3
+        persistentVolumeClaim:
+          claimName: cli-claim3
+      - name: cli-claim4
+        persistentVolumeClaim:
+          claimName: cli-claim4
+      - name: cli-claim5
+        persistentVolumeClaim:
+          claimName: cli-claim5
+      - name: cli-claim6
+        persistentVolumeClaim:
+          claimName: cli-claim6
+status: {}

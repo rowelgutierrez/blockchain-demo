@@ -1,0 +1,61 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.18.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: orderer-imfreemobile-com
+  name: orderer-imfreemobile-com
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: orderer-imfreemobile-com
+    spec:
+      containers:
+      - args:
+        - orderer
+        env:
+        - name: FABRIC_LOGGING_SPEC
+          value: info
+        - name: ORDERER_GENERAL_GENESISFILE
+          value: /etc/hyperledger/configtx/genesis.block
+        - name: ORDERER_GENERAL_GENESISMETHOD
+          value: file
+        - name: ORDERER_GENERAL_LISTENADDRESS
+          value: 0.0.0.0
+        - name: ORDERER_GENERAL_LOCALMSPDIR
+          value: /etc/hyperledger/msp/orderer/msp
+        - name: ORDERER_GENERAL_LOCALMSPID
+          value: OrdererMSP
+        image: hyperledger/fabric-orderer:1.4.1
+        name: orderer.imfreemobile.com
+        ports:
+        - containerPort: 7050
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/hyperledger/configtx
+          name: orderer-imfreemobile-com-claim0
+        - mountPath: /etc/hyperledger/msp/orderer
+          name: orderer-imfreemobile-com-claim1
+        - mountPath: /etc/hyperledger/msp/peerOrg1
+          name: orderer-imfreemobile-com-claim2
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+      restartPolicy: Always
+      volumes:
+      - name: orderer-imfreemobile-com-claim0
+        persistentVolumeClaim:
+          claimName: orderer-imfreemobile-com-claim0
+      - name: orderer-imfreemobile-com-claim1
+        persistentVolumeClaim:
+          claimName: orderer-imfreemobile-com-claim1
+      - name: orderer-imfreemobile-com-claim2
+        persistentVolumeClaim:
+          claimName: orderer-imfreemobile-com-claim2
+status: {}
