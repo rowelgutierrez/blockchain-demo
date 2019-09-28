@@ -8,4 +8,4 @@ spec:
     - port: 7054
       targetPort: 7054
   selector:
-    component: ca.imfreemobile.com
+    component: ca-imfreemobile-com
