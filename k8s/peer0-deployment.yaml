@@ -190,6 +190,8 @@ spec:
               value: /etc/hyperledger/msp/peer/
             - name: CORE_PEER_ADDRESS
               value: peer0-org1-imfreemobile-com:7051
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:7052
             # - name: CORE_PEER_LISTENADDRESS
             #   value: 0.0.0.0:7051
             # - name: CORE_PEER_EVENTS_ADDRESS
