@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: orderer-imfreemobile-com
+  template:
+    metadata:
+      labels:
+        component: orderer-imfreemobile-com
+    spec:
+      initContainers:
+        - name: configmap-copy
+          image: busybox
+          command: ['/bin/sh', '-c']
+          args: ['cp -R /etc/hyperledger/files/orderers/* /etc/hyperledger/orderers/']
+          volumeMounts:
+            - name: orderer-storage
+              mountPath: /etc/hyperledger/orderers
+            - name: orderer-msp-admincerts-mount
+              mountPath: /etc/hyperledger/files/orderers/msp/admincerts
+            - name: orderer-msp-cacerts-mount
+              mountPath: /etc/hyperledger/files/orderers/msp/cacerts
+            - name: orderer-msp-keystore-mount
+              mountPath: /etc/hyperledger/files/orderers/msp/keystore
+            - name: orderer-msp-signcerts-mount
+              mountPath: /etc/hyperledger/files/orderers/msp/signcerts
+            - name: orderer-msp-tlscacerts-mount
+              mountPath: /etc/hyperledger/files/orderers/msp/tlscacerts
+            - name: orderer-tls-mount
+              mountPath: /etc/hyperledger/files/orderers/tls
+      volumes:
+        - name: orderer-storage
+          emptyDir: {}
+        - name: orderer-msp-admincerts-mount
+          secret:
+            secretName: o-cert-orderer-msp-admincerts
+        - name: orderer-msp-cacerts-mount
+          secret:
+            secretName: o-cert-orderer-msp-cacerts
+        - name: orderer-msp-keystore-mount
+          secret:
+            secretName: o-cert-orderer-msp-keystore
+        - name: orderer-msp-signcerts-mount
+          secret:
+            secretName: o-cert-orderer-msp-signcerts
+        - name: orderer-msp-tlscacerts-mount
+          secret:
+            secretName: o-cert-orderer-msp-tlscacerts
+        - name: orderer-tls-mount
+          secret:
+            secretName: o-cert-orderer-tls
+      containers:
+        - name: orderer-imfreemobile-com
+          image: hyperledger/fabric-orderer:1.4.1
+          ports:
+            - containerPort: 7050
+          volumeMounts:
+            - name: orderer-storage
+              mountPath: /etc/hyperledger/msp/orderer
+              readOnly: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          env:
+            - name: FABRIC_LOGGING_SPEC
+              value: info
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_GENESISMETHOD
+              value: file
+            - name: ORDERER_GENERAL_GENESISFILE
+              value: /etc/hyperledger/configtx/genesis.block
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: OrdererMSP
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: /etc/hyperledger/msp/orderer/msp
