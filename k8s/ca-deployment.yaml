@@ -47,7 +47,7 @@ spec:
             - name: FABRIC_CA_HOME
               value: /etc/hyperledger/fabric-ca-server
             - name: FABRIC_CA_SERVER_CA_NAME
-              value: ca-cluster-ip-service
+              value: ca-imfreemobile-com
             - name: FABRIC_CA_SERVER_CA_CERTFILE
               value: /etc/hyperledger/fabric-ca-server-config/ca.imfreemobile.com-cert.pem
             - name: FABRIC_CA_SERVER_CA_KEYFILE
