@@ -89,6 +89,6 @@ do
     kubectl get secrets $SECRET -o yaml > "$SAVE_SECRETS_DIR/$SECRET.yaml"
 done
 
-# CONFIGMAP
+# CONFIGMAP ->>> EDIT DIRECTORY REFERENCES
 SAVE_CONFIGMAP_DIR="$WORKING_DIR/k8s/configmap"
-kubectl create configmap channel-artifacts --from-file=hyperledger/fabric-network/channel-artifacts -o yaml > "$SAVE_CONFIGMAP_DIR/channel-artifacts.yaml"
+kubectl create configmap channel-artifacts --from-file=hyperledger/fabric-network/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/msp/config.yaml --from-file=hyperledger/fabric-network/channel-artifacts -o yaml > "$SAVE_CONFIGMAP_DIR/channel-artifacts.yaml"
