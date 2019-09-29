@@ -12,10 +12,21 @@ spec:
       labels:
         component: ca-imfreemobile-com
     spec:
+      initContainers:
+        - name: configmap-copy
+          image: busybox
+          command: ['/bin/sh', '-c', 'cp /etc/hyperledger/files/* /etc/hyperledger/']
+          volumeMounts:
+            - name: ca-storage-mount
+              mountPath: /etc/hyperledger/files
+            - name: ca-storage
+              mountPath: /etc/hyperledger
       volumes:
-        - name: ca-storage
+        - name: ca-storage-mount
           secret:
-            secretName: ca-ssl
+            secretName: o-cert-ca
+        - name: ca-storage
+          emptyDir: {}
       containers:
         - name: ca-imfreemobile-com
           image: hyperledger/fabric-ca:1.4.1
@@ -24,7 +35,7 @@ spec:
           volumeMounts:
             - name: ca-storage
               mountPath: /etc/hyperledger/fabric-ca-server-config
-              readOnly: true
+              readOnly: false
           resources:
             requests:
               cpu: 100m
@@ -38,6 +49,8 @@ spec:
             - name: FABRIC_CA_SERVER_CA_NAME
               value: ca-cluster-ip-service
             - name: FABRIC_CA_SERVER_CA_CERTFILE
-              value: /etc/hyperledger/fabric-ca-server-config/ca.pem
+              value: /etc/hyperledger/fabric-ca-server-config/ca.imfreemobile.com-cert.pem
             - name: FABRIC_CA_SERVER_CA_KEYFILE
-              value: /etc/hyperledger/fabric-ca-server-config/ca_key
+              value: /etc/hyperledger/fabric-ca-server-config/af02abd1c33fa7107b765763ec9cbd457a12881dc62746f962be463a31890bd8_sk
+          command: ["sh"]
+          args: ["-c", "fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/af02abd1c33fa7107b765763ec9cbd457a12881dc62746f962be463a31890bd8_sk -b admin:adminpw -d"]
