@@ -1,0 +1,52 @@
+{
+    "name": "imfree-network",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "channels": {
+        "userschannel": {
+            "orderers": [
+                "orderer-imfreemobile-com"
+            ],
+            "peers": {
+                "peer0-org1-imfreemobile-com": {}
+            }
+        }
+    },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "peer0-org1-imfreemobile-com"
+            ],
+            "certificateAuthorities": [
+                "ca-imfreemobile-com"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer-imfreemobile-com": {
+            "url": "grpc://orderer-imfreemobile-com:7050"
+        }
+    },
+    "peers": {
+        "peer0-org1-imfreemobile-com": {
+            "url": "grpc://peer0-org1-imfreemobile-com:7051"
+        }
+    },
+    "certificateAuthorities": {
+        "ca-imfreemobile-com": {
+            "url": "http://ca-imfreemobile-com:7054",
+            "caName": "ca-imfreemobile-com"
+        }
+    }
+}

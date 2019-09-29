@@ -8,9 +8,10 @@ const FabricCAServices = require('fabric-ca-client');
 const { FileSystemWallet, X509WalletMixin } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 
 // const ccpPath = path.resolve(__dirname, '..', '..', 'imfree-network', 'connection.json');
-const ccpPath = path.join('/', 'var', 'hyperledger', 'config', 'connection.json');
+const ccpPath = path.join(process.env['JSON_CONNECTION_DIR'], 'connection.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
@@ -18,7 +19,7 @@ const enroll = async () => {
     try {
 
         // Create a new CA client for interacting with the CA.
-        const caURL = ccp.certificateAuthorities['ca.imfreemobile.com'].url;
+        const caURL = ccp.certificateAuthorities[process.env['CA_ADDRESS']].url;
         const ca = new FabricCAServices(caURL);
 
         // Create a new file system based wallet for managing identities.

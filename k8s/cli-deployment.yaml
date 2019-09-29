@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: cli
+  template:
+    metadata:
+      labels:
+        component: cli
+    spec:
+      initContainers:
+        - name: configmap-copy
+          image: busybox
+          command: ['/bin/sh', '-c']
+          args: ['cp -R /var/hyperledger/fabric/peer/channel-artifacts/files/* /var/hyperledger/fabric/peer/channel-artifacts/ && cp -R /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/files/* /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers && cp -R /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/files/* /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users']
+          volumeMounts:
+            - name: configtx
+              mountPath: /var/hyperledger/fabric/peer/channel-artifacts
+            - name: peer-tls-storage
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls
+            - name: admin-msp-storage
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users
+            - name: configtx-mount
+              mountPath: /var/hyperledger/fabric/peer/channel-artifacts/files/genesis.block
+              subPath: genesis.block
+            - name: configtx-mount
+              mountPath: /var/hyperledger/fabric/peer/channel-artifacts/files/channel.tx
+              subPath: channel.tx
+            - name: configtx-mount
+              mountPath: /var/hyperledger/fabric/peer/channel-artifacts/files/Org1MSPanchors.tx
+              subPath: Org1MSPanchors.tx
+            - name: peer-tls-mount
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/files/peer0.org1.imfreemobile.com/tls
+# &*********************************************
+            - name: admin-admincerts-mount
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/files/Admin@org1.imfreemobile.com/msp/admincerts
+            - name: admin-cacerts-mount
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/files/Admin@org1.imfreemobile.com/msp/cacerts
+            - name: admin-keystore-mount
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/files/Admin@org1.imfreemobile.com/msp/keystore
+            - name: admin-signcerts-mount
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/files/Admin@org1.imfreemobile.com/msp/signcerts
+            - name: admin-tlscacerts-mount
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/files/Admin@org1.imfreemobile.com/msp/tlscacerts
+            # - name: admin-tls-mount
+            #   mountPath: /etc/hyperledger/msp/users/files/Admin@org1.imfreemobile.com/tls
+      volumes:
+        - name: dockersocket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: configtx
+          emptyDir: {}
+        - name: peer-tls-storage
+          emptyDir: {}
+        - name: admin-msp-storage
+          emptyDir: {}
+        - name: peer-tls-mount
+          secret:
+            secretName: p-cert-peer-tls
+# &*********************************************
+        - name: admin-admincerts-mount
+          secret:
+            secretName: p-cert-admin-msp-admincerts
+        - name: admin-cacerts-mount
+          secret:
+            secretName: p-cert-admin-msp-cacerts
+        - name: admin-keystore-mount
+          secret:
+            secretName: p-cert-admin-msp-keystore
+        - name: admin-signcerts-mount
+          secret:
+            secretName: p-cert-admin-msp-signcerts
+        - name: admin-tlscacerts-mount
+          secret:
+            secretName: p-cert-admin-msp-tlscacerts
+        # - name: admin-tls-mount
+        #   secret:
+        #     secretName: p-cert-admin-tls
+# &*********************************************
+        - name: configtx-mount
+          configMap:
+              name: channel-artifacts
+              items:
+              - key: genesis.block
+                path: genesis.block
+              - key: channel.tx
+                path: channel.tx
+              - key: Org1MSPanchors.tx
+                path: Org1MSPanchors.tx
+              - key: config.yaml
+                path: config.yaml
+      containers:
+        - name: cli
+          image: rowelgutierrez/fabric-workspace
+          tty: true
+          workingDir: /var/hyperledger/fabric/peer
+          command: ["/bin/bash"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          volumeMounts:
+            - mountPath: /host/var/run/docker.sock
+              name: dockersocket
+            - name: configtx
+              mountPath: /var/hyperledger/fabric/peer/channel-artifacts
+              readOnly: false
+            - name: peer-tls-storage
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls
+              readOnly: false
+            - name: admin-msp-storage
+              mountPath: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users
+              readOnly: false
+          env:
+            - name: DEV_MODE
+              value: "false"
+            - name: CORE_VM_ENDPOINT
+              value: unix:///host/var/run/docker.sock
+            - name: FABRIC_LOGGING_SPEC
+              value: info
+            - name: CORE_PEER_ID
+              value: cli
+            - name: CORE_PEER_ADDRESS
+              value: peer0-org1-imfreemobile-com:7051
+            - name: CA_ADDRESS
+              value: ca-imfreemobile-com
+            - name: CORE_PEER_LOCALMSPID
+              value: Org1MSP
+            - name: CORE_CHAINCODE_KEEPALIVE
+              value: "10"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.crt
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.key
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: /var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp

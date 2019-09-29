@@ -7,8 +7,9 @@
 const { FileSystemWallet, Gateway, X509WalletMixin } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 
-const ccpPath = path.join('/', 'var', 'hyperledger', 'config', 'connection.json');
+const ccpPath = path.join(process.env['JSON_CONNECTION_DIR'], 'connection.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
