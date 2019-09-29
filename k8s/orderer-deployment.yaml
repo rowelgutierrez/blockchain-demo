@@ -16,24 +16,37 @@ spec:
         - name: configmap-copy
           image: busybox
           command: ['/bin/sh', '-c']
-          args: ['cp -R /etc/hyperledger/files/orderers/* /etc/hyperledger/orderers/']
+          args: ['cp -R /etc/hyperledger/msp/orderer/files/* /etc/hyperledger/msp/orderer/ && cp -R /etc/hyperledger/configtx/files/* /etc/hyperledger/configtx/']
           volumeMounts:
             - name: orderer-storage
-              mountPath: /etc/hyperledger/orderers
+              mountPath: /etc/hyperledger/msp/orderer
+            - name: configtx
+              mountPath: /etc/hyperledger/configtx
             - name: orderer-msp-admincerts-mount
-              mountPath: /etc/hyperledger/files/orderers/msp/admincerts
+              mountPath: /etc/hyperledger/msp/orderer/files/msp/admincerts
             - name: orderer-msp-cacerts-mount
-              mountPath: /etc/hyperledger/files/orderers/msp/cacerts
+              mountPath: /etc/hyperledger/msp/orderer/files/msp/cacerts
             - name: orderer-msp-keystore-mount
-              mountPath: /etc/hyperledger/files/orderers/msp/keystore
+              mountPath: /etc/hyperledger/msp/orderer/files/msp/keystore
             - name: orderer-msp-signcerts-mount
-              mountPath: /etc/hyperledger/files/orderers/msp/signcerts
+              mountPath: /etc/hyperledger/msp/orderer/files/msp/signcerts
             - name: orderer-msp-tlscacerts-mount
-              mountPath: /etc/hyperledger/files/orderers/msp/tlscacerts
+              mountPath: /etc/hyperledger/msp/orderer/files/msp/tlscacerts
             - name: orderer-tls-mount
-              mountPath: /etc/hyperledger/files/orderers/tls
+              mountPath: /etc/hyperledger/msp/orderer/files/tls
+            - name: configtx-mount
+              mountPath: /etc/hyperledger/configtx/files/genesis.block
+              subPath: genesis.block
+            - name: configtx-mount
+              mountPath: /etc/hyperledger/configtx/files/channel.tx
+              subPath: channel.tx
+            - name: configtx-mount
+              mountPath: /etc/hyperledger/configtx/files/Org1MSPanchors.block
+              subPath: Org1MSPanchors.tx
       volumes:
         - name: orderer-storage
+          emptyDir: {}
+        - name: configtx
           emptyDir: {}
         - name: orderer-msp-admincerts-mount
           secret:
@@ -53,14 +66,30 @@ spec:
         - name: orderer-tls-mount
           secret:
             secretName: o-cert-orderer-tls
+        - name: configtx-mount
+          configMap:
+              name: channel-artifacts
+              items:
+              - key: genesis.block
+                path: genesis.block
+              - key: channel.tx
+                path: channel.tx
+              - key: Org1MSPanchors.tx
+                path: Org1MSPanchors.tx
       containers:
         - name: orderer-imfreemobile-com
+          # image: busybox
+          # command: ["sleep", "3600"]
           image: hyperledger/fabric-orderer:1.4.1
+          # command: ["orderer"]
           ports:
             - containerPort: 7050
           volumeMounts:
             - name: orderer-storage
               mountPath: /etc/hyperledger/msp/orderer
+              readOnly: false
+            - name: configtx
+              mountPath: /etc/hyperledger/configtx
               readOnly: false
           resources:
             requests:

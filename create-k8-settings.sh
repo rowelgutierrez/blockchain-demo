@@ -83,10 +83,12 @@ createSecret "$KEY-user1-msp-tlscacerts" "$CONFIG_DIR/users/$USER1_ORG1_DOMAIN/m
 createSecret "$KEY-user1-tls" "$CONFIG_DIR/users/$USER1_ORG1_DOMAIN/tls"
 
 # SAVE SECRETS
-SAVE_DIR="$WORKING_DIR/k8s/secrets"
+SAVE_SECRETS_DIR="$WORKING_DIR/k8s/secrets"
 for SECRET in $(kubectl get secret -o=jsonpath='{.items[?(@.type=="Opaque")].metadata.name}')
 do
-    kubectl get secrets $SECRET -o yaml > "$SAVE_DIR/$SECRET.yaml"
+    kubectl get secrets $SECRET -o yaml > "$SAVE_SECRETS_DIR/$SECRET.yaml"
 done
 
-# kubectl create configmap ca-config --from-file=hyperledger/fabric-network/crypto-config/peerOrganizations/org1.imfreemobile.com/ca/573828539f2bf796f3d7ab0b59deb58a70a5059c61653c071a8817a649c0e021_sk --from-file=hyperledger/fabric-network/crypto-config/peerOrganizations/org1.imfreemobile.com/ca/ca.org1.imfreemobile.com-cert.pem
+# CONFIGMAP
+SAVE_CONFIGMAP_DIR="$WORKING_DIR/k8s/configmap"
+kubectl create configmap channel-artifacts --from-file=hyperledger/fabric-network/channel-artifacts -o yaml > "$SAVE_CONFIGMAP_DIR/channel-artifacts.yaml"
