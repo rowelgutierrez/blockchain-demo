@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ca-cluster-ip-service
+  name: ca-imfreemobile-com
 spec:
   type: ClusterIP
   ports:
