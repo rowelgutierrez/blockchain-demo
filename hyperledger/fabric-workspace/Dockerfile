@@ -6,6 +6,8 @@ ENV JSON_CONNECTION_DIR /var/hyperledger/fabric/peer/config
 
 COPY ./ ./
 
+RUN (cd ./chaincode/user-management; npm install)
+
 RUN chmod +x scripts/*.sh
 
 CMD ["/bin/bash"]
