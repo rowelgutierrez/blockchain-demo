@@ -51,7 +51,7 @@ function createSecrets() {
 }
 
 # DELETE EXISTING
-kubectl delete secrets $(kubectl get secret -o=jsonpath='{.items[?(@.type=="Opaque")].metadata.name}')
+# kubectl delete secrets $(kubectl get secret -o=jsonpath='{.items[?(@.type=="Opaque")].metadata.name}')
 
 #*******************************************************
 #******************* ORDERER SECRETS *******************
