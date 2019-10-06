@@ -1,0 +1,183 @@
+# Since we're still deploying to a single node/server, we're using hostPath here.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shared-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /tmp/shared-volume
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: docker-pv
+  labels:
+    type: local
+    name: dockervolume
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/tmp-docker-pv"
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: docker-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      name: dockervolume
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker
+  labels:
+    run: docker
+spec:
+  selector:
+    name: docker
+  ports:
+    - protocol: TCP
+      targetPort: 2375
+      port: 2375
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: docker-dind
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: docker
+    spec:
+      volumes:
+        - name: dockervolume
+          persistentVolumeClaim:
+            claimName: docker-pvc
+      containers:
+        - name: docker
+          securityContext:
+            privileged: true
+          image: "docker:18.09.0-dind"
+          ports:
+            - containerPort: 2375
+          volumeMounts:
+            - mountPath: /var/lib/docker
+              name: dockervolume
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: cli
+  template:
+    metadata:
+      labels:
+        component: cli
+    spec:
+      volumes:
+        - name: dockersocket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: shared-pvc
+      containers:
+        - name: cli
+          image: rowelgutierrez/fabric-workspace:latest
+          # imagePullPolicy: Never
+          tty: true
+          workingDir: /var/hyperledger/fabric/peer
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          volumeMounts:
+            - mountPath: /host/var/run/docker.sock
+              name: dockersocket
+            - name: shared-volume
+              mountPath: /var/hyperledger/fabric/peer/channel-artifacts
+              subPath: channel-artifacts
+            - name: shared-volume
+              mountPath: /var/hyperledger/fabric/peer/crypto-config
+              subPath: crypto-config
+            - name: shared-volume
+              mountPath: /var/hyperledger/fabric/peer/lock
+              subPath: lock
+          env:
+            - name: TZ
+              value: "UTC"
+            - name: DEV_MODE
+              value: "false"
+            - name: CORE_VM_ENDPOINT
+              value: tcp://docker:2375
+            - name: CORE_PEER_ADDRESSAUTODETECT
+              value: "false"
+            - name: CORE_PEER_NETWORKID
+              value: "nid1"
+            - name: FABRIC_CFG_PATH
+              value: /etc/hyperledger/fabric
+            - name: FABRIC_LOGGING_SPEC
+              value: info
+            - name: CORE_PEER_ID
+              value: cli
+            - name: CORE_PEER_ADDRESS
+              value: peer0-org1-imfreemobile-com:7051
+            - name: CA_ADDRESS
+              value: ca-imfreemobile-com
+            - name: CORE_PEER_LOCALMSPID
+              value: Org1MSP
+            - name: CORE_PEER_MSPID
+              value: Org1MSP
+            - name: CORE_CHAINCODE_KEEPALIVE
+              value: "10"
+            - name: GODEBUG
+              value: "netdns=go"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: /var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.crt
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: /var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.key
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: /var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: /var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
