@@ -69,7 +69,7 @@ Organizations:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer0-org1-imfreemobile-com
+            - Host: peer0.org1.imfreemobile.com
               Port: 7051
 
 ################################################################################
@@ -177,7 +177,7 @@ Orderer: &OrdererDefaults
     OrdererType: solo
 
     Addresses:
-        - orderer-imfreemobile-com:7050
+        - orderer.imfreemobile.com:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s

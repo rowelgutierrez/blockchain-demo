@@ -115,15 +115,18 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
       - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
+      - CC_SRC_PATH=/opt/gopath/src/github.com/
+      - JSON_DEV_CONNECTION=/var/hyperledger/config/connection.dev.json
+      - CA_ADDRESS=ca.imfreemobile.com
     working_dir: /var/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
-        - ./../chaincode/:/opt/gopath/src/github.com/
+        - ./../fabric-workspace/chaincode/:/opt/gopath/src/github.com/
         - ./crypto-config:/var/hyperledger/fabric/peer/crypto/
         - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
         - ./scripts/:/var/hyperledger/scripts
-        - ./config:/var/hyperledger/config
+        - ./../fabric-workspace/config:/var/hyperledger/config
         - ./../sample-app/:/var/hyperledger/sample-app
     networks:
         - basic

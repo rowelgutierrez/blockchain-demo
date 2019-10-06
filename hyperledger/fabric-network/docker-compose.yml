@@ -15,10 +15,10 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.imfreemobile.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/ac9bfd841f444a351d4f7c106df9fec99d1ae595c0d3436fad39673803832f3d_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/67e84bcb78d7d20e7d25540b826cfb10426474d67911efa28918953591773d8b_sk
     ports:
       - "7054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/ac9bfd841f444a351d4f7c106df9fec99d1ae595c0d3436fad39673803832f3d_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.imfreemobile.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/67e84bcb78d7d20e7d25540b826cfb10426474d67911efa28918953591773d8b_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/org1.imfreemobile.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.imfreemobile.com
@@ -115,15 +115,18 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
       - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
+      - CC_SRC_PATH=/opt/gopath/src/github.com/
+      - JSON_DEV_CONNECTION=/var/hyperledger/config/connection.dev.json
+      - CA_ADDRESS=ca.imfreemobile.com
     working_dir: /var/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
-        - ./../chaincode/:/opt/gopath/src/github.com/
+        - ./../fabric-workspace/chaincode/:/opt/gopath/src/github.com/
         - ./crypto-config:/var/hyperledger/fabric/peer/crypto/
         - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
         - ./scripts/:/var/hyperledger/scripts
-        - ./config:/var/hyperledger/config
+        - ./../fabric-workspace/config:/var/hyperledger/config
         - ./../sample-app/:/var/hyperledger/sample-app
     networks:
         - basic

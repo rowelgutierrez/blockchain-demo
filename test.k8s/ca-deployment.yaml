@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ca-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: ca-imfreemobile-com
+  template:
+    metadata:
+      labels:
+        component: ca-imfreemobile-com
+    spec:
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: shared-pvc
+      containers:
+        - name: ca-imfreemobile-com
+          image: hyperledger/fabric-ca:1.4.1
+          ports:
+            - containerPort: 7054
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /shared/hyperledger/data
+              readOnly: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          env:
+            - name: TZ
+              value: "UTC"
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: ca-imfreemobile-com
+            - name: FABRIC_CA_SERVER_CA_CERTFILE
+              value: /shared/hyperledger/data/crypto-config/peerOrganizations/org1.imfreemobile.com/ca/ca.org1.imfreemobile.com-cert.pem
+            - name: FABRIC_CA_SERVER_TLS_ENABLED
+              value: "false"
+            - name: GODEBUG
+              value: "netdns=go"
+          command: ["sh"]
+          args: ["-c", "fabric-ca-server start --ca.keyfile $(ls /shared/hyperledger/data/crypto-config/peerOrganizations/org1.imfreemobile.com/ca/*_sk) -b admin:adminpw -d"]

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer0-org1-imfreemobile-com
+spec:
+  type: ClusterIP
+  ports:
+    - name: "7051"
+      port: 7051
+      targetPort: 7051
+    - name: "7053"
+      port: 7053
+      targetPort: 7053
+  selector:
+    component: peer0-org1-imfreemobile-com

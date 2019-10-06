@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer0-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: peer0-org1-imfreemobile-com
+  template:
+    metadata:
+      labels:
+        component: peer0-org1-imfreemobile-com
+    spec:
+      initContainers:
+        - name: configmap-copy
+          image: busybox
+          command: ['/bin/sh', '-c']
+          args: ['cp -R /etc/hyperledger/shared/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/msp/* /etc/hyperledger/msp/peer/ && cp -R /etc/hyperledger/shared/crypto-config/peerOrganizations/org1.imfreemobile.com/users/* /etc/hyperledger/msp/users/ && cp -R /etc/hyperledger/shared/channel-artifacts/* /etc/hyperledger/configtx/']
+          volumeMounts:
+            - name: peer-storage
+              mountPath: /etc/hyperledger/msp/peer
+            - name: users-storage
+              mountPath: /etc/hyperledger/msp/users
+            - name: configtx
+              mountPath: /etc/hyperledger/configtx
+            - name: shared-volume
+              mountPath: /etc/hyperledger/shared
+      volumes:
+        - name: dockersocket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: peer-storage
+          emptyDir: {}
+        - name: users-storage
+          emptyDir: {}
+        - name: configtx
+          emptyDir: {}
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: shared-pvc
+      containers:
+        - name: peer0-org1-imfreemobile-com
+          image: hyperledger/fabric-peer:1.4.1
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+          command: ['/bin/sh', '-c', 'peer node start']
+          ports:
+            - containerPort: 7051
+            - containerPort: 7053
+          volumeMounts:
+            - mountPath: /host/var/run/docker.sock
+              name: dockersocket
+            - name: users-storage
+              mountPath: /etc/hyperledger/msp/users
+              readOnly: false
+            - name: peer-storage
+              mountPath: /etc/hyperledger/msp/peer
+              readOnly: false
+            - name: configtx
+              mountPath: /etc/hyperledger/configtx
+              readOnly: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          env:
+            - name: TZ
+              value: "UTC"
+            - name: GODEBUG
+              value: "netdns=go"
+            - name: CORE_VM_ENDPOINT
+              value: unix:///host/var/run/docker.sock
+            - name: CORE_PEER_NETWORKID
+              value: nid1
+            - name: CORE_PEER_ID
+              value: peer0-org1-imfreemobile-com
+            - name: FABRIC_LOGGING_SPEC
+              value: info
+            - name: CORE_PEER_LOCALMSPID
+              value: Org1MSP
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: /etc/hyperledger/msp/peer/
+            - name: CORE_PEER_ADDRESS
+              value: peer0-org1-imfreemobile-com:7051
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:7053
+            - name: CORE_PEER_LISTENADDRESS
+              value: 0.0.0.0:7051
+            - name: CORE_PEER_EVENTS_ADDRESS
+              value: 0.0.0.0:7053
+            - name: CORE_PEER_GOSSIP_BOOTSTRAP
+              value: peer0-org1-imfreemobile-com:7051
+            - name: CORE_PEER_GOSSIP_ENDPOINT
+              value: peer0-org1-imfreemobile-com:7051
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: peer0-org1-imfreemobile-com:7051
+            - name: ORDERER_URL
+              value: orderer-imfreemobile-com:7050
+            - name: CORE_VM_DOCKER_ATTACHSTDOUT
+              value: "true"
+            - name: CORE_PEER_ADDRESSAUTODETECT
+              value: "true"
+            - name: CORE_LEDGER_STATE_STATEDATABASE
+              value: CouchDB
+            - name: CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS
+              value: couchdb:5984
+            - name: CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME
+              value: ""
+            - name: CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+              value: ""

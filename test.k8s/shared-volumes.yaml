@@ -1,0 +1,25 @@
+# Since we're still deploying to a single node/server, we're using hostPath here.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shared-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteMany
+  hostPath:
+    path: /tmp/shared-volume
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
