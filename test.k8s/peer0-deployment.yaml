@@ -76,9 +76,9 @@ spec:
             - name: CORE_PEER_NETWORKID
               value: nid1
             - name: CORE_PEER_ID
-              value: peer0-org1-imfreemobile-com
+              value: org1peer0
             - name: FABRIC_LOGGING_SPEC
-              value: info
+              value: debug
             - name: CORE_PEER_LOCALMSPID
               value: Org1MSP
             - name: CORE_PEER_MSPCONFIGPATH

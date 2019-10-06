@@ -84,8 +84,9 @@ spec:
     spec:
       volumes:
         - name: dockervolume
-          persistentVolumeClaim:
-            claimName: docker-pvc
+          # persistentVolumeClaim:
+          #   claimName: docker-pvc
+          emptyDir: {}
       containers:
         - name: docker
           securityContext:
