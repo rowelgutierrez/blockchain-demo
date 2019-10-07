@@ -23,7 +23,7 @@ if(connection) {
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
-const enroll = async () => {
+async function main() {
     try {
 
         // Create a new CA client for interacting with the CA.
@@ -55,4 +55,4 @@ const enroll = async () => {
     }
 }
 
-module.exports = enroll;
+main()

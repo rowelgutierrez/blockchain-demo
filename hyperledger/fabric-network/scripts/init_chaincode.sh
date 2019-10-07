@@ -1,5 +1,6 @@
 DEV_MODE="true"
 WORKDIR=/var/hyperledger/fabric/peer
+AUTH_DIR=$WORKDIR/auth
 
 if [ -z "${CC_SRC_PATH}" ]
 then
@@ -37,12 +38,10 @@ if [[ $string != *"Invalid chain ID, userschannel"* ]]; then
     peer channel create -o $ORDERER_ADDRESS:7050 -c "$USERS_CHANNEL" -f $CHANNEL_ARTIFACTS_DIR/channel.tx
 
     echo "Joining userschannel..."
-    sleep $SLEEP_TIMER
 
     peer channel join -b $WORKDIR/userschannel.block
 
     echo "Updating peer anchor..."
-    sleep $SLEEP_TIMER
 
     # Update peer anchor peer for Org1
     peer channel update -o $ORDERER_ADDRESS:7050 -c "$USERS_CHANNEL" -f $CHANNEL_ARTIFACTS_DIR/Org1MSPanchors.tx
@@ -53,7 +52,7 @@ fi
 # Install node_modules
 echo "Installing node libraries..."
 
-cd $CC_SRC_PATH/user-management
+cd $AUTH_DIR
 npm install
 
 # Register admin user
@@ -61,19 +60,19 @@ echo "Registering users..."
 node enrollAdmin.js
 node registerSampleUser.js
 
+cd $CC_SRC_PATH/user-management
+npm install
+
 echo "Install chaincode $CC_SRC_PATH/user-management"
-sleep $SLEEP_TIMER
 
 peer chaincode install -n userm -v 1.0 -p "$CC_SRC_PATH/user-management" -l node
 
 echo "Instantiate chaincode in channel $USERS_CHANNEL"
-sleep $SLEEP_TIMER
 
 peer chaincode instantiate -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n userm -l node -v 1.0 -c '{"Args":[]}' -P "AND ('Org1MSP.member')"
 # peer chaincode instantiate -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n mycc -l ${LANGUAGE} -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "AND ('Org1MSP.peer','Org2MSP.peer')" >&log.txt
 
 echo "Invoke user-management initLedger func"
-sleep $SLEEP_TIMER
 
 peer chaincode invoke -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n userm -c '{"function":"initLedger","Args":[]}'
 

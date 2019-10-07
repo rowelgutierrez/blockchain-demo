@@ -58,13 +58,18 @@ spec:
             - name: GODEBUG
               value: "netdns=go"
             - name: CORE_VM_ENDPOINT
-              value: tcp://docker:2375
+              # value: tcp://docker:2375
+              value: unix:///host/var/run/docker.sock
             - name: CORE_PEER_NETWORKID
               value: nid1
             - name: CORE_PEER_ID
               value: peer0-org1-imfreemobile-com
             - name: FABRIC_LOGGING_SPEC
               value: debug
+            - name: CORE_CHAINCODE_DEPLOYTIMEOUT
+              value: 900s
+            - name: CORE_CHAINCODE_EXECUTETIMEOUT
+              value: 900s
             - name: CORE_PEER_LOCALMSPID
               value: Org1MSP
             - name: CORE_PEER_MSPCONFIGPATH

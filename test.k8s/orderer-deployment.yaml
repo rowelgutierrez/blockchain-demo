@@ -13,6 +13,9 @@ spec:
         component: orderer-imfreemobile-com
     spec:
       volumes:
+        - name: dockersocket
+          hostPath:
+            path: /var/run/docker.sock
         - name: shared-volume
           persistentVolumeClaim:
             claimName: shared-pvc
@@ -24,6 +27,8 @@ spec:
           ports:
             - containerPort: 7050
           volumeMounts:
+            - mountPath: /host/var/run/docker.sock
+              name: dockersocket
             - name: shared-volume
               mountPath: /shared
               readOnly: false
@@ -39,8 +44,15 @@ spec:
               value: "UTC"
             - name: GODEBUG
               value: "netdns=go"
+            - name: CORE_VM_ENDPOINT
+              # value: tcp://docker:2375
+              value: unix:///host/var/run/docker.sock
             - name: FABRIC_LOGGING_SPEC
               value: info
+            - name: CORE_CHAINCODE_DEPLOYTIMEOUT
+              value: 900s
+            - name: CORE_CHAINCODE_EXECUTETIMEOUT
+              value: 900s
             - name: ORDERER_GENERAL_TLS_ENABLED
               value: "false"
             - name: ORDERER_GENERAL_LISTENADDRESS
