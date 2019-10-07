@@ -1,6 +1,19 @@
+while [ $(peer node status) != "status:STARTED" ]
+do
+    echo "Waiting for peer node $CORE_PEER_ADDRESS"
+    sleep 1
+done
+
+echo "Peer node $CORE_PEER_ADDRESS is ready"
+
 DEV_MODE="true"
 WORKDIR=/var/hyperledger/fabric/peer
 AUTH_DIR=$WORKDIR/auth
+
+if [ -z "${USER_CC_NAME}" ]
+then
+    USER_CC_NAME=userm
+fi
 
 if [ -z "${CC_SRC_PATH}" ]
 then
@@ -25,8 +38,6 @@ fi
 
 echo "Orderer Address: $ORDERER_ADDRESS"
 
-SLEEP_TIMER=10
-
 # Users channel name
 USERS_CHANNEL=userschannel
 
@@ -39,7 +50,7 @@ if [[ $string != *"Invalid chain ID, userschannel"* ]]; then
 
     echo "Joining userschannel..."
 
-    peer channel join -b $WORKDIR/userschannel.block
+    peer channel join -b $WORKDIR/$USERS_CHANNEL.block
 
     echo "Updating peer anchor..."
 
@@ -65,15 +76,22 @@ npm install
 
 echo "Install chaincode $CC_SRC_PATH/user-management"
 
-peer chaincode install -n userm -v 1.0 -p "$CC_SRC_PATH/user-management" -l node
+peer chaincode install -n $USER_CC_NAME -v 1.0 -p "$CC_SRC_PATH/user-management" -l node
 
 echo "Instantiate chaincode in channel $USERS_CHANNEL"
 
-peer chaincode instantiate -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n userm -l node -v 1.0 -c '{"Args":[]}' -P "AND ('Org1MSP.member')"
+peer chaincode instantiate -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n $USER_CC_NAME -l node -v 1.0 -c '{"Args":[]}' -P "AND ('Org1MSP.member')"
 # peer chaincode instantiate -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n mycc -l ${LANGUAGE} -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "AND ('Org1MSP.peer','Org2MSP.peer')" >&log.txt
+
+# Give chaincode time to propagate
+while [[ $(peer chaincode list --instantiated -C $USERS_CHANNEL) != *"$USER_CC_NAME"* ]]
+do
+  echo "Waiting for chaincode $USER_CC_NAME to be instantiated"
+  sleep 1
+done
 
 echo "Invoke user-management initLedger func"
 
-peer chaincode invoke -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n userm -c '{"function":"initLedger","Args":[]}'
+peer chaincode invoke -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n $USER_CC_NAME -c '{"function":"initLedger","Args":[]}'
 
 # Test chaincode

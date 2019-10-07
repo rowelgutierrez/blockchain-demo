@@ -1,6 +1,6 @@
 echo "Starting cluster"
 
-K8_DIR=test.k8s
+K8_DIR=k8s
 
 if [ "$1" = "minikube" ] && [ "$2" = "new" ]; then
     minikube stop && minikube delete && minikube start --cpus 4 --memory 8192 --vm-driver hyperkit

@@ -2,4 +2,4 @@
 chaincode/*/node_modules
 auth/node_modules
 chaincode/*/package-lock.json
-auth/package-lock.json
+*/package-lock.json
