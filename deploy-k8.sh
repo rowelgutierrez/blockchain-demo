@@ -24,4 +24,8 @@ while [ "${NUMPENDING}" != "0" ]; do
     sleep 1
 done
 
+CLI_POD=$(kubectl get pods -l component=cli --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+echo "Running init_chaincode.sh from POD $CLI_POD"
+kubectl exec pods/$CLI_POD bash /var/hyperledger/fabric/peer/scripts/init_chaincode.sh
+
 echo "All Done"
