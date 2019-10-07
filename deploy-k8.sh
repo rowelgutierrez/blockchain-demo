@@ -2,7 +2,9 @@ echo "Starting cluster"
 
 K8_DIR=test.k8s
 
-# minikube start --vm-driver hyperkit --disk-size 30g
+if [ "$1" = "minikube" ] && [ "$2" = "new" ]; then
+    minikube stop && minikube delete && minikube start --cpus 4 --memory 8192 --vm-driver hyperkit
+fi
 
 kubectl apply -f $K8_DIR/setup.yaml
 AVAILABLE=$(kubectl get deployments | grep cli-deployment | awk '{print $4}')

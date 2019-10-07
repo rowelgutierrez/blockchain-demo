@@ -11,12 +11,13 @@ OrdererOrgs:
   # Orderer
   # ---------------------------------------------------------------------------
   - Name: Orderer
-    Domain: imfreemobile.com
+    Domain: imfreemobile-com
     # ---------------------------------------------------------------------------
     # "Specs" - See PeerOrgs below for complete description
     # ---------------------------------------------------------------------------
     Specs:
-      - Hostname: orderer
+      - Hostname: orderer # implicitly "foo.org1.imfreemobile.com"
+        CommonName: orderer-imfreemobile-com # overrides Hostname-based FQDN set above
 # ---------------------------------------------------------------------------
 # "PeerOrgs" - Definition of organizations managing peer nodes
 # ---------------------------------------------------------------------------
@@ -25,7 +26,7 @@ PeerOrgs:
   # Org1
   # ---------------------------------------------------------------------------
   - Name: Org1
-    Domain: org1.imfreemobile.com
+    Domain: org1-imfreemobile-com
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -43,9 +44,9 @@ PeerOrgs:
     #                 which obtains its values from the Spec.Hostname and
     #                 Org.Domain, respectively.
     # ---------------------------------------------------------------------------
-    # Specs:
-    #   - Hostname: foo # implicitly "foo.org1.imfreemobile.com"
-    #     CommonName: foo27.org5.imfreemobile.com # overrides Hostname-based FQDN set above
+    Specs:
+      - Hostname: peer0 # implicitly "foo.org1.imfreemobile.com"
+        CommonName: peer0-org1-imfreemobile-com # overrides Hostname-based FQDN set above
     #   - Hostname: bar
     #   - Hostname: baz
     # ---------------------------------------------------------------------------
@@ -60,8 +61,8 @@ PeerOrgs:
     # sections and the aggregate nodes will be created for you.  Take care with
     # name collisions
     # ---------------------------------------------------------------------------
-    Template:
-      Count: 1
+    # Template:
+    #   Count: 1
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
     # ---------------------------------------------------------------------------

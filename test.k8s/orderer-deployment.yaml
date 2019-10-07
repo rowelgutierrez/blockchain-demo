@@ -12,27 +12,7 @@ spec:
       labels:
         component: orderer-imfreemobile-com
     spec:
-      initContainers:
-        - name: configmap-copy
-          image: busybox
-          command: ['/bin/sh', '-c']
-          args: ['cp -R /etc/hyperledger/shared/crypto-config/ordererOrganizations/imfreemobile.com/orderers/orderer.imfreemobile.com/* /etc/hyperledger/msp/orderer/ && cp -R /etc/hyperledger/shared/channel-artifacts/* /etc/hyperledger/configtx/ && cp -R /etc/hyperledger/shared/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/* /etc/hyperledger/msp/peerOrg1/']
-          volumeMounts:
-            - name: orderer-storage
-              mountPath: /etc/hyperledger/msp/orderer
-            - name: peer-storage
-              mountPath: /etc/hyperledger/msp/peerOrg1
-            - name: configtx
-              mountPath: /etc/hyperledger/configtx
-            - name: shared-volume
-              mountPath: /etc/hyperledger/shared
       volumes:
-        - name: orderer-storage
-          emptyDir: {}
-        - name: peer-storage
-          emptyDir: {}
-        - name: configtx
-          emptyDir: {}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: shared-pvc
@@ -44,22 +24,16 @@ spec:
           ports:
             - containerPort: 7050
           volumeMounts:
-            - name: orderer-storage
-              mountPath: /etc/hyperledger/msp/orderer
-              readOnly: false
-            - name: peer-storage
-              mountPath: /etc/hyperledger/msp/peerOrg1
-              readOnly: false
-            - name: configtx
-              mountPath: /etc/hyperledger/configtx
+            - name: shared-volume
+              mountPath: /shared
               readOnly: false
           resources:
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 200m
+              memory: 1Gi
             limits:
               cpu: 200m
-              memory: 200Mi
+              memory: 1Gi
           env:
             - name: TZ
               value: "UTC"
@@ -74,8 +48,10 @@ spec:
             - name: ORDERER_GENERAL_GENESISMETHOD
               value: file
             - name: ORDERER_GENERAL_GENESISFILE
-              value: /etc/hyperledger/configtx/genesis.block
+              # value: /etc/hyperledger/configtx/genesis.block
+              value: /shared/channel-artifacts/genesis.block
             - name: ORDERER_GENERAL_LOCALMSPID
               value: OrdererMSP
             - name: ORDERER_GENERAL_LOCALMSPDIR
-              value: /etc/hyperledger/msp/orderer/msp
+              # value: /etc/hyperledger/msp/orderer/msp
+              value: /shared/crypto-config/ordererOrganizations/imfreemobile-com/orderers/orderer-imfreemobile-com/msp

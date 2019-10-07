@@ -23,7 +23,7 @@ spec:
             - containerPort: 7054
           volumeMounts:
             - name: shared-volume
-              mountPath: /shared/hyperledger/data
+              mountPath: /shared
               readOnly: false
           resources:
             requests:
@@ -40,10 +40,10 @@ spec:
             - name: FABRIC_CA_SERVER_CA_NAME
               value: ca-imfreemobile-com
             - name: FABRIC_CA_SERVER_CA_CERTFILE
-              value: /shared/hyperledger/data/crypto-config/peerOrganizations/org1.imfreemobile.com/ca/ca.org1.imfreemobile.com-cert.pem
+              value: /shared/crypto-config/peerOrganizations/org1-imfreemobile-com/ca/ca.org1-imfreemobile-com-cert.pem
             - name: FABRIC_CA_SERVER_TLS_ENABLED
               value: "false"
             - name: GODEBUG
               value: "netdns=go"
           command: ["sh"]
-          args: ["-c", "fabric-ca-server start --ca.keyfile $(ls /shared/hyperledger/data/crypto-config/peerOrganizations/org1.imfreemobile.com/ca/*_sk) -b admin:adminpw -d"]
+          args: ["-c", "fabric-ca-server start --ca.keyfile $(ls /shared/crypto-config/peerOrganizations/org1-imfreemobile-com/ca/*_sk) -b admin:adminpw -d"]

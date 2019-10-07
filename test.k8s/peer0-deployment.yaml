@@ -12,30 +12,13 @@ spec:
       labels:
         component: peer0-org1-imfreemobile-com
     spec:
-      initContainers:
-        - name: configmap-copy
-          image: busybox
-          command: ['/bin/sh', '-c']
-          args: ['cp -R /etc/hyperledger/shared/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/msp/* /etc/hyperledger/msp/peer/ && cp -R /etc/hyperledger/shared/crypto-config/peerOrganizations/org1.imfreemobile.com/users/* /etc/hyperledger/msp/users/ && cp -R /etc/hyperledger/shared/channel-artifacts/* /etc/hyperledger/configtx/']
-          volumeMounts:
-            - name: peer-storage
-              mountPath: /etc/hyperledger/msp/peer
-            - name: users-storage
-              mountPath: /etc/hyperledger/msp/users
-            - name: configtx
-              mountPath: /etc/hyperledger/configtx
-            - name: shared-volume
-              mountPath: /etc/hyperledger/shared
       volumes:
         - name: dockersocket
           hostPath:
             path: /var/run/docker.sock
-        - name: peer-storage
-          emptyDir: {}
-        - name: users-storage
-          emptyDir: {}
-        - name: configtx
-          emptyDir: {}
+        # - name: hostvarrun
+        #   hostPath:
+        #     path: /host/var/run/
         - name: shared-volume
           persistentVolumeClaim:
             claimName: shared-pvc
@@ -50,22 +33,25 @@ spec:
           volumeMounts:
             - mountPath: /host/var/run/docker.sock
               name: dockersocket
-            - name: users-storage
-              mountPath: /etc/hyperledger/msp/users
+            - name: shared-volume
+              mountPath: /shared
               readOnly: false
-            - name: peer-storage
-              mountPath: /etc/hyperledger/msp/peer
-              readOnly: false
-            - name: configtx
-              mountPath: /etc/hyperledger/configtx
-              readOnly: false
+            # - name: users-storage
+            #   mountPath: /etc/hyperledger/msp/users
+            #   readOnly: false
+            # - name: peer-storage
+            #   mountPath: /etc/hyperledger/msp/peer
+            #   readOnly: false
+            # - name: configtx
+            #   mountPath: /etc/hyperledger/configtx
+            #   readOnly: false
           resources:
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 200m
+              memory: 1Gi
             limits:
               cpu: 200m
-              memory: 200Mi
+              memory: 1Gi
           env:
             - name: TZ
               value: "UTC"
@@ -76,29 +62,31 @@ spec:
             - name: CORE_PEER_NETWORKID
               value: nid1
             - name: CORE_PEER_ID
-              value: org1peer0
+              value: peer0-org1-imfreemobile-com
             - name: FABRIC_LOGGING_SPEC
               value: debug
             - name: CORE_PEER_LOCALMSPID
               value: Org1MSP
             - name: CORE_PEER_MSPCONFIGPATH
-              value: /etc/hyperledger/msp/peer/
+              value: /shared/crypto-config/peerOrganizations/org1-imfreemobile-com/peers/peer0-org1-imfreemobile-com/msp/
             - name: CORE_PEER_ADDRESS
               value: peer0-org1-imfreemobile-com:7051
             - name: CORE_PEER_CHAINCODELISTENADDRESS
-              value: 0.0.0.0:7053
+              value: 0.0.0.0:7052
             - name: CORE_PEER_LISTENADDRESS
               value: 0.0.0.0:7051
             - name: CORE_PEER_EVENTS_ADDRESS
               value: 0.0.0.0:7053
-            - name: CORE_PEER_GOSSIP_BOOTSTRAP
-              value: peer0-org1-imfreemobile-com:7051
-            - name: CORE_PEER_GOSSIP_ENDPOINT
-              value: peer0-org1-imfreemobile-com:7051
-            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
-              value: peer0-org1-imfreemobile-com:7051
+            # - name: CORE_PEER_GOSSIP_BOOTSTRAP
+            #   value: peer0-org1-imfreemobile-com:7051
+            # - name: CORE_PEER_GOSSIP_ENDPOINT
+            #   value: peer0-org1-imfreemobile-com:7051
+            # - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+            #   value: peer0-org1-imfreemobile-com:7051
             - name: ORDERER_URL
               value: orderer-imfreemobile-com:7050
+            # - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+            #   value: host
             - name: CORE_VM_DOCKER_ATTACHSTDOUT
               value: "true"
             - name: CORE_PEER_ADDRESSAUTODETECT
