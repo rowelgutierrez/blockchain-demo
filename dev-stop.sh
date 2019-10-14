@@ -15,7 +15,7 @@ if [ "$1" = "reset" ]; then
     rm *.block    
 fi
 
-cd $BASE_DIR/hyperledger/fabric-network/scripts
+cd $BASE_DIR/hyperledger/fabric-network
 
 docker-compose down -v
 

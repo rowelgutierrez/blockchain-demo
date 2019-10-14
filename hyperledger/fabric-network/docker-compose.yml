@@ -119,6 +119,7 @@ services:
       - CC_SRC_PATH=/var/hyperledger/fabric/peer/chaincode/
       - JSON_DEV_CONNECTION=/var/hyperledger/fabric/peer/config/connection.dev.json
       - CA_ADDRESS=ca.imfreemobile.com
+      - USER_CC_NAME=userm
     working_dir: /var/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
