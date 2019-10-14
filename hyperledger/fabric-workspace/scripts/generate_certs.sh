@@ -13,14 +13,13 @@ function generateCerts() {
         rm -Rf crypto-config
     fi
     set -x
-    cryptogen generate --config=$WORKDIR/crypto-config.yaml
+    cryptogen generate --output=$WORKDIR/crypto-config --config=$WORKDIR/crypto-config.yaml
     res=$?
     set +x
     if [ $res -ne 0 ]; then
         echo "Failed to generate certificates..."
         exit 1
     fi
-    echo
 }
 
 function generateChannelArtifacts() {
@@ -97,6 +96,10 @@ if [ ! -f "$WORKDIR/lock/certs.lock" ]; then
 
     generateCerts
     generateChannelArtifacts
+
+    if [ ! -d "$WORKDIR/loc" ]; then
+        mkdir $WORKDIR/lock
+    fi
 
     touch $WORKDIR/lock/certs.lock
 fi

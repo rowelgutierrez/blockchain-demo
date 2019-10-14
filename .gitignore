@@ -184,6 +184,7 @@ crypto-config
 channel-artifacts
 hyperledger/chaincode/*/wallet
 !hyperledger/fabric-workspace/channel-artifacts
+hyperledger/fabric-network/lock
 
 # NodeJS
 node_modules
