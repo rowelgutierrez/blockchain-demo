@@ -11,7 +11,8 @@ if [ "$1" = "reset" ]; then
     rm -rf crypto-config
     rm -rf lock
 
-    cd ../../
+    cd $BASE_DIR/hyperledger/fabric-workspace
+    rm *.block    
 fi
 
 cd $BASE_DIR/hyperledger/fabric-network/scripts
