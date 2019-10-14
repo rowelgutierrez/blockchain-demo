@@ -3,3 +3,4 @@ chaincode/*/node_modules
 auth/node_modules
 chaincode/*/package-lock.json
 */package-lock.json
+*.block
