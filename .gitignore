@@ -180,10 +180,7 @@ Temporary Items
 
 # Hyperledger Composer
 crypto-config
-!hyperledger/fabric-workspace/crypto-config
 channel-artifacts
-hyperledger/chaincode/*/wallet
-!hyperledger/fabric-workspace/channel-artifacts
 hyperledger/fabric-network/lock
 
 # NodeJS
