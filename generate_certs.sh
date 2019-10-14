@@ -1,7 +1,9 @@
-export WORKDIR=$(pwd)/hyperledger/fabric-network
+export BASE_DIR=$(pwd)
 
-cd ./hyperledger/fabric-workspace/scripts
+export WORKDIR=$BASE_DIR/hyperledger/fabric-network
+
+cd $BASE_DIR/hyperledger/fabric-workspace/scripts
 
 bash generate_certs.sh
 
-cd ../../../
+cd $BASE_DIR

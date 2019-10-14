@@ -1,13 +1,27 @@
 #!/bin/bash
 #
-# Copyright IBM Corp All Rights Reserved
-#
-# SPDX-License-Identifier: Apache-2.0
-#
 # Exit on first error, print all commands.
 set -ev
 
-cd ./hyperledger/fabric-network
+export BASE_DIR=$(pwd)
+
+export WORKDIR=$BASE_DIR/hyperledger/fabric-network
+
+# Generate certs and artifacts
+cd $BASE_DIR/hyperledger/fabric-workspace/scripts
+
+bash generate_certs.sh
+
+# Rename CA secret key
+export CA_CERTS_DIR=$BASE_DIR/hyperledger/fabric-network/crypto-config/peerOrganizations/org1.imfreemobile.com/ca/
+cd $CA_CERTS_DIR
+export CA1_PRIVATE_KEY=$(ls *_sk)
+mv $CA_CERTS_DIR/$CA1_PRIVATE_KEY $CA_CERTS_DIR/cert_sk
+
+# *******************************************
+# ************** Start network **************
+# *******************************************
+cd $BASE_DIR/hyperledger/fabric-network
 
 # don't rewrite paths for Windows Git Bash users
 export MSYS_NO_PATHCONV=1
