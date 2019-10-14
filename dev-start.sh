@@ -29,7 +29,7 @@ export MSYS_NO_PATHCONV=1
 docker-compose down
 
 # docker-compose up -d
-docker-compose -f docker-compose.yml up -d ca.imfreemobile.com orderer.imfreemobile.com peer0.org1.imfreemobile.com couchdb cli
+docker-compose -f docker-compose.yml up -d ca.imfreemobile.com orderer.imfreemobile.com peer0.org1.imfreemobile.com couchdb cli api-server
 docker ps -a
 
 # wait for Hyperledger Fabric to start

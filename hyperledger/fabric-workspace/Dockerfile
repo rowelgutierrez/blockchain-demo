@@ -9,6 +9,6 @@ ENV WORKDIR /var/hyperledger/fabric/peer
 
 RUN chmod +x scripts/*.sh
 
-RUN mkdir channel-artifacts crypto-config lock
+# RUN mkdir channel-artifacts crypto-config lock
 
 CMD ["/bin/bash", "scripts/cli_start.sh"]

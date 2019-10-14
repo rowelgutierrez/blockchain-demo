@@ -1,156 +1,100 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
- */
+SPDX-License-Identifier: Apache-2.0
+*/
 
 'use strict';
 
-const { Contract } = require('fabric-contract-api');
+// Utility class for ledger state
+const State = require('./../ledger-api/state.js');
 
-class User extends Contract {
+// Enumerate user state values
+const cpState = {
+    INVITED: 1,
+    REGISTERED: 2,
+    // ONBOARDED: 3
+};
 
-    async initLedger(ctx) {
-        console.info('============= START : Initialize Ledger ===========');
-        const cars = [
-            {
-                color: 'blue',
-                make: 'Toyota',
-                model: 'Prius',
-                owner: 'Tomoko',
-            },
-            {
-                color: 'red',
-                make: 'Ford',
-                model: 'Mustang',
-                owner: 'Brad',
-            },
-            {
-                color: 'green',
-                make: 'Hyundai',
-                model: 'Tucson',
-                owner: 'Jin Soo',
-            },
-            {
-                color: 'yellow',
-                make: 'Volkswagen',
-                model: 'Passat',
-                owner: 'Max',
-            },
-            {
-                color: 'black',
-                make: 'Tesla',
-                model: 'S',
-                owner: 'Adriana',
-            },
-            {
-                color: 'purple',
-                make: 'Peugeot',
-                model: '205',
-                owner: 'Michel',
-            },
-            {
-                color: 'white',
-                make: 'Chery',
-                model: 'S22L',
-                owner: 'Aarav',
-            },
-            {
-                color: 'violet',
-                make: 'Fiat',
-                model: 'Punto',
-                owner: 'Pari',
-            },
-            {
-                color: 'indigo',
-                make: 'Tata',
-                model: 'Nano',
-                owner: 'Valeria',
-            },
-            {
-                color: 'brown',
-                make: 'Holden',
-                model: 'Barina',
-                owner: 'Shotaro',
-            },
-        ];
+/**
+ * User class extends State class
+ * Class will be used by application and smart contract to define a user
+ */
+class User extends State {
 
-        for (let i = 0; i < cars.length; i++) {
-            cars[i].docType = 'car';
-            await ctx.stub.putState('CAR' + i, Buffer.from(JSON.stringify(cars[i])));
-            console.info('Added <--> ', cars[i]);
-        }
-        console.info('============= END : Initialize Ledger ===========');
+    constructor(obj) {
+        super(User.getClass(), [obj.emailAddr]);
+        Object.assign(this, obj);
     }
 
-    async queryCar(ctx, carNumber) {
-        const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-        if (!carAsBytes || carAsBytes.length === 0) {
-            throw new Error(`${carNumber} does not exist`);
-        }
-        console.log(carAsBytes.toString());
-        return carAsBytes.toString();
+    /**
+     * Basic getters and setters
+    */
+
+    getInviter() {
+        return this.inviterEmailAddr;
     }
 
-    async createCar(ctx, carNumber, make, model, color, owner) {
-        console.info('============= START : Create Car ===========');
-
-        const car = {
-            color,
-            docType: 'car',
-            make,
-            model,
-            owner,
-        };
-
-        await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-        console.info('============= END : Create Car ===========');
+    setInviter(inviterEmailAddr) {
+        this.inviterEmailAddr = inviterEmailAddr;
+        this.currentState = cpState.INVITED;
     }
 
-    async queryAllCars(ctx) {
-        const startKey = 'CAR0';
-        const endKey = 'CAR999';
+    getFullname() {
+        return this.fullname;
+    }
 
-        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+    setFullname(fullname) {
+        this.fullname = fullname;
+    }
 
-        const allResults = [];
-        while (true) {
-            const res = await iterator.next();
-
-            if (res.value && res.value.value.toString()) {
-                console.log(res.value.value.toString('utf8'));
-
-                const Key = res.value.key;
-                let Record;
-                try {
-                    Record = JSON.parse(res.value.value.toString('utf8'));
-                } catch (err) {
-                    console.log(err);
-                    Record = res.value.value.toString('utf8');
-                }
-                allResults.push({ Key, Record });
-            }
-            if (res.done) {
-                console.log('end of data');
-                await iterator.close();
-                console.info(allResults);
-                return JSON.stringify(allResults);
-            }
+    /**
+     * Useful methods to encapsulate commercial user states
+     */
+    updateWallet(amount) {
+        if(this.walletAmount) {
+            this.walletAmount += Number(amount).toFixed(2);
+        } else {
+            this.walletAmount = Number(0).toFixed(2);
         }
     }
 
-    async changeCarOwner(ctx, carNumber, newOwner) {
-        console.info('============= START : changeCarOwner ===========');
-
-        const carAsBytes = await ctx.stub.getState(carNumber); // get the car from chaincode state
-        if (!carAsBytes || carAsBytes.length === 0) {
-            throw new Error(`${carNumber} does not exist`);
-        }
-        const car = JSON.parse(carAsBytes.toString());
-        car.owner = newOwner;
-
-        await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
-        console.info('============= END : changeCarOwner ===========');
+    setRegistered() {
+        this.currentState = cpState.REGISTERED;
     }
 
+    isInvited() {
+        return this.currentState === cpState.INVITED;
+    }
+
+    isRegistered() {
+        return this.currentState === cpState.REGISTERED;
+    }
+
+    static fromBuffer(buffer) {
+        return User.deserialize(Buffer.from(JSON.parse(buffer)));
+    }
+
+    toBuffer() {
+        return Buffer.from(JSON.stringify(this));
+    }
+
+    /**
+     * Deserialize a state data to user
+     * @param {Buffer} data to form back into the object
+     */
+    static deserialize(data) {
+        return State.deserializeClass(data, User);
+    }
+
+    /**
+     * Factory method to create a user object
+     */
+    static createInstance(emailAddress, fullname) {
+        return new User({ emailAddress, fullname });
+    }
+
+    static getClass() {
+        return 'com.imfreemobile.user';
+    }
 }
 
 module.exports = User;
