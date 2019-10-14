@@ -28,12 +28,12 @@ fi
 
 echo "Artifacts Directory: $CHANNEL_ARTIFACTS_DIR"
 
-if [ "${DEV_MODE}" == "true" ]
+echo "DEV_MODE=${DEV_MODE}"
+
+if [ "${DEV_MODE}" = "true" ]
 then
-    echo "####### DEV MODE"
     ORDERER_ADDRESS="orderer.imfreemobile.com"
 else
-    echo "####### PROD MODE"
     ORDERER_ADDRESS="orderer-imfreemobile-com"
 fi
 

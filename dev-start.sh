@@ -38,6 +38,6 @@ export FABRIC_START_TIMEOUT=10
 #echo ${FABRIC_START_TIMEOUT}
 sleep ${FABRIC_START_TIMEOUT}
 
-docker exec cli bash /var/hyperledger/scripts/init_chaincode.sh
+docker exec cli bash /var/hyperledger/fabric/peer/scripts/init_chaincode.sh
 
 cd ../../

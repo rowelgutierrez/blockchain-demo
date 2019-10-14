@@ -105,29 +105,35 @@ services:
     tty: true
     environment:
       - GOPATH=/opt/gopath
+      - DEV_MODE=true
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_LOGGING_SPEC=info
       - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=peer0.org1.imfreemobile.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/fabric/peer/crypto/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
+      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
-      - CC_SRC_PATH=/opt/gopath/src/github.com/
-      - JSON_DEV_CONNECTION=/var/hyperledger/config/connection.dev.json
+      - CC_SRC_PATH=/var/hyperledger/fabric/peer/chaincode/
+      - JSON_DEV_CONNECTION=/var/hyperledger/fabric/peer/config/connection.dev.json
       - CA_ADDRESS=ca.imfreemobile.com
     working_dir: /var/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
-        - ./../fabric-workspace/chaincode/:/opt/gopath/src/github.com/
-        - ./crypto-config:/var/hyperledger/fabric/peer/crypto/
+        - ./crypto-config:/var/hyperledger/fabric/peer/crypto-config/
         - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
-        - ./scripts/:/var/hyperledger/scripts
-        - ./../fabric-workspace/config:/var/hyperledger/config
-        - ./../sample-app/:/var/hyperledger/sample-app
+        # Workspace mount
+        # - ./../fabric-workspace/auth/:/var/hyperledger/fabric/peer/auth
+        # - ./../fabric-workspace/config/:/var/hyperledger/fabric/peer/config
+        # - ./../fabric-workspace/chaincode/:/var/hyperledger/fabric/peer/chaincode
+        # - ./../fabric-workspace/sample-app/:/var/hyperledger/fabric/peer/sample-app
+        # - ./../fabric-workspace/scripts/:/var/hyperledger/fabric/peer/scripts
+        # - ./../fabric-workspace/configtx.yaml:/var/hyperledger/fabric/peer/
+        # - ./../fabric-workspace/crypto-config.yaml:/var/hyperledger/fabric/peer/
+        - ./../fabric-workspace/:/var/hyperledger/fabric/peer
     networks:
         - basic
     depends_on:
