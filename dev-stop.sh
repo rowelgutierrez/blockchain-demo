@@ -22,6 +22,6 @@ cd $BASE_DIR/hyperledger/fabric-network
 
 docker-compose down -v
 docker container rm $(docker ps -aq)
-# docker rmi fabric-network_api-server
+docker rmi fabric-network_api-server
 
 cd $BASE_DIR
