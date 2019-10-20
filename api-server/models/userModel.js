@@ -7,7 +7,10 @@ const process = require('process');
 const walletPath = path.join('/', 'var', 'hyperledger', 'wallet');
 
 exports.UserModel = class UserModel {
-    constructor() {}
+    constructor() {
+        this.ccp = this.getConnectionProfile();
+        this.wallet = await this.getWallet();
+    }
 
     getConnectionProfile = () => {
         let ccpPath = process.env['JSON_CONNECTION_PROFILE'];
@@ -32,11 +35,7 @@ exports.UserModel = class UserModel {
         return gateway;
     }
 
-    getContract = async () => {
-        const ccp = this.getConnectionProfile();
-        const wallet = await this.getWallet();
-        const gateway = await this.gatewayConnect(ccp, wallet);
-        
+    getContract = async (gateway) => {
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork('userschannel');
 
@@ -48,7 +47,9 @@ exports.UserModel = class UserModel {
     }
 
     get = async (userId) => {
-        const contract = await this.getContract();
+        const gateway = await this.gatewayConnect(this.ccp, this.wallet);
+        const contract = await this.getContract(this.gateway);
+
         const result = await contract.evaluateTransaction('queryUser', userId);
         
         await gateway.disconnect();
@@ -57,22 +58,20 @@ exports.UserModel = class UserModel {
     }
 
     invite = async (userId, emailAddr, fullname, inviterId) => {
-        const contract = await this.getContract();
-        // const result = 
+        const gateway = await this.gatewayConnect(this.ccp, this.wallet);
+        const contract = await this.getContract(this.gateway);
+        
         await contract.submitTransaction('inviteUser', userId, emailAddr, fullname, inviterId);
         
         await gateway.disconnect();
-
-        // return result;
     }
 
     register = async (userId, emailAddr, fullname) => {
-        const contract = await this.getContract();
-        // const result = 
+        const gateway = await this.gatewayConnect(this.ccp, this.wallet);
+        const contract = await this.getContract(this.gateway);
+        
         await contract.submitTransaction('registerUser', userId, emailAddr, fullname);
         
         await gateway.disconnect();
-
-        // return result;
     }
 }
