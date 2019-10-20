@@ -8,6 +8,22 @@ const { Contract } = require('fabric-contract-api');
 
 class User extends Contract {
 
+    async initLedger(ctx) {
+        console.info('============= START : Initialize Ledger ===========');
+        const users = [
+            {emailAddr: 'rowel.gutierrez@imfreemobile.com',
+            fullname: 'Rowel Gutierrez',
+            status: 'REGISTERED',
+            wallet: 0}
+        ];
+
+        for (let i = 0; i < users.length; i++) {
+            await ctx.stub.putState('USER' + i, Buffer.from(JSON.stringify(users[i])));
+            console.info('Added <--> ', users[i]);
+        }
+        console.info('============= END : Initialize Ledger ===========');
+    }
+
     async getUser(ctx, userId) {
         const userAsBytes = await ctx.stub.getState(userId); // get the car from chaincode state
         if (userAsBytes && userAsBytes.length > 0) {

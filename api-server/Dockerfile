@@ -5,9 +5,9 @@ WORKDIR /app
 
 COPY package.json .
 
-RUN apk add --no-cache make gcc g++ python && \
-  npm install --production --silent && \
-  apk del make gcc g++ python
+RUN apk add --no-cache make gcc g++ python
+RUN npm install --production --silent
+RUN apk del make gcc g++ python
 
 COPY . .
 # RUN npm run build

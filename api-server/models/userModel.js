@@ -7,31 +7,47 @@ const process = require('process');
 const walletPath = path.join('/', 'var', 'hyperledger', 'wallet');
 
 exports.UserModel = class UserModel {
-    constructor() {
-        this.ccp = this.getConnectionProfile();
-        this.wallet = await this.getWallet();
-    }
+    constructor() {}
 
-    getConnectionProfile = () => {
-        let ccpPath = process.env['JSON_CONNECTION_PROFILE'];
-        const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
-        return JSON.parse(ccpJSON);
-    }
+    // getConnectionProfile = () => {
+    //     let ccpPath = process.env['JSON_CONNECTION_PROFILE'];
+    //     const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
+    //     return JSON.parse(ccpJSON);
+    // }
 
-    getWallet = async () => {
-        const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
+    // getWallet = async () => {
+    //     const wallet = new FileSystemWallet(walletPath);
+    //     console.log(`Wallet path: ${walletPath}`);
 
-        // Check to see if we've already enrolled the user.
-        const userExists = await wallet.exists('user1');
+    //     // Check to see if we've already enrolled the user.
+    //     // const userExists = await wallet.exists('user1');
 
-        return wallet;
-    }
+    //     return wallet;
+    // }
 
-    gatewayConnect = async (ccp, wallet) => {
+    gatewayConnect = async () => {
+        if (!this.ccp) {
+            let ccpPath = process.env['JSON_CONNECTION_PROFILE'];
+            const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
+            this.ccp = JSON.parse(ccpJSON);
+        }
+
+        if (!this.wallet) {
+            this.wallet = new FileSystemWallet(walletPath);
+            console.log(`Wallet path: ${walletPath}`);
+    
+            // Check to see if we've already enrolled the user.
+            const userExists = await this.wallet.exists('user1');
+
+            if (!userExists) {
+                // throw new Error(`User "user1" does not exist`)
+                console.error(`User "user1" does not exist`);
+            }
+        }
+
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: 'user1', discovery: { enabled: false } });
+        await gateway.connect(this.ccp, { wallet: this.wallet, identity: 'user1', discovery: { enabled: false } });
         return gateway;
     }
 
@@ -47,31 +63,56 @@ exports.UserModel = class UserModel {
     }
 
     get = async (userId) => {
-        const gateway = await this.gatewayConnect(this.ccp, this.wallet);
-        const contract = await this.getContract(gateway);
+        let gateway;
+        let result;
 
-        const result = await contract.evaluateTransaction('queryUser', userId);
+        try {
+            gateway = await this.gatewayConnect();
+            const contract = await this.getContract(gateway);
+
+            result = await contract.evaluateTransaction('queryUser', userId);
+        } catch (error) {
+            console.error(`Failed to query user details: ${error}`);
+        } finally {
+            if (gateway) {
+                await gateway.disconnect();
+            }
+        }
         
-        await gateway.disconnect();
-
-        return result;
+        return JSON.parse(result.toString());
     }
 
     invite = async (userId, emailAddr, fullname, inviterId) => {
-        const gateway = await this.gatewayConnect(this.ccp, this.wallet);
-        const contract = await this.getContract(gateway);
-        
-        await contract.submitTransaction('inviteUser', userId, emailAddr, fullname, inviterId);
-        
-        await gateway.disconnect();
+        let gateway;
+
+        try {
+            gateway = await this.gatewayConnect();
+            const contract = await this.getContract(gateway);
+
+            await contract.submitTransaction('inviteUser', userId, emailAddr, fullname, inviterId);
+        } catch (error) {
+            console.error(`Failed to invite user: ${error}`);
+        } finally {
+            if (gateway) {
+                await gateway.disconnect();
+            }
+        }
     }
 
     register = async (userId, emailAddr, fullname) => {
-        const gateway = await this.gatewayConnect(this.ccp, this.wallet);
-        const contract = await this.getContract(gateway);
-        
-        await contract.submitTransaction('registerUser', userId, emailAddr, fullname);
-        
-        await gateway.disconnect();
+        let gateway;
+
+        try {
+            gateway = await this.gatewayConnect();
+            const contract = await this.getContract(gateway);
+
+            await contract.submitTransaction('registerUser', userId, emailAddr, fullname);
+        } catch (error) {
+            console.error(`Failed to register user: ${error}`);
+        } finally {
+            if (gateway) {
+                await gateway.disconnect();
+            }
+        }
     }
 }

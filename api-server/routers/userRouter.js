@@ -6,7 +6,14 @@ const router = express.Router();
 router.get('/:id', async (req, res, next) => {
     const user = await getUser(req.params.id);
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(user);
+
+    if (user) {
+        res.status(200).json(user);
+    } else {
+        res.status(200).json({
+            "msg": "User not found"
+        });
+    }
 });
 
 router.post('/invite', async (req, res, next) => {
