@@ -1,5 +1,6 @@
 'use strict';
 
-const UserContract = require('./lib/usercontract.js');
+const User = require('./lib/user');
 
-module.exports.contracts = [ UserContract ];
+module.exports.User = User;
+module.exports.contracts = [ User ];

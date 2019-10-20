@@ -10,15 +10,7 @@ exports.UserModel = class UserModel {
     constructor() {}
 
     getConnectionProfile = () => {
-        const devMode = process.env['DEV_MODE'];
-        let ccpPath;
-
-        if(devMode === 'true') {
-            ccpPath = process.env['JSON_DEV_CONNECTION'];
-        } else {
-            ccpPath = path.join(process.env['JSON_CONNECTION_DIR'], 'connection.json');
-        }
-
+        let ccpPath = process.env['JSON_CONNECTION_PROFILE'];
         const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
         return JSON.parse(ccpJSON);
     }
@@ -55,29 +47,29 @@ exports.UserModel = class UserModel {
         return contract;
     }
 
-    get = async (emailAddr) => {
+    get = async (userId) => {
         const contract = await this.getContract();
-        const result = await contract.evaluateTransaction('getUserByEmail', emailAddr);
+        const result = await contract.evaluateTransaction('queryUser', userId);
         
         await gateway.disconnect();
 
         return result;
     }
 
-    invite = async (emailAddr, fullname, inviterEmailAddr) => {
+    invite = async (userId, emailAddr, fullname, inviterId) => {
         const contract = await this.getContract();
         // const result = 
-        await contract.submitTransaction('invite', emailAddr, fullname, inviterEmailAddr);
+        await contract.submitTransaction('inviteUser', userId, emailAddr, fullname, inviterId);
         
         await gateway.disconnect();
 
         // return result;
     }
 
-    register = async (emailAddr, fullname) => {
+    register = async (userId, emailAddr, fullname) => {
         const contract = await this.getContract();
         // const result = 
-        await contract.submitTransaction('register', emailAddr, fullname);
+        await contract.submitTransaction('registerUser', userId, emailAddr, fullname);
         
         await gateway.disconnect();
 

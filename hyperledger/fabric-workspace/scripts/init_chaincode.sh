@@ -81,7 +81,7 @@ echo "Installing chaincode node libraries..."
 cd $CC_SRC_PATH/user-management
 npm install
 
-echo "Install chaincode $CC_SRC_PATH/user-management"
+echo "Install chaincode $USER_CC_NAME for $CC_SRC_PATH/user-management"
 
 peer chaincode install -n $USER_CC_NAME -v 1.0 -p "$CC_SRC_PATH/user-management" -l node
 
