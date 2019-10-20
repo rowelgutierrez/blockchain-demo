@@ -8,22 +8,6 @@ const { Contract } = require('fabric-contract-api');
 
 class User extends Contract {
 
-    async initLedger(ctx) {
-        console.info('============= START : Initialize Ledger ===========');
-        const users = [
-            {emailAddr: 'rowel.gutierrez@imfreemobile.com',
-            fullname: 'Rowel Gutierrez',
-            status: 'REGISTERED',
-            wallet: 0}
-        ];
-
-        for (let i = 0; i < users.length; i++) {
-            await ctx.stub.putState('USER' + i, Buffer.from(JSON.stringify(users[i])));
-            console.info('Added <--> ', users[i]);
-        }
-        console.info('============= END : Initialize Ledger ===========');
-    }
-
     async getUser(ctx, userId) {
         const userAsBytes = await ctx.stub.getState(userId); // get the car from chaincode state
         if (userAsBytes && userAsBytes.length > 0) {
@@ -56,22 +40,18 @@ class User extends Contract {
     }
 
     async registerUser(ctx, userId, emailAddr, fullname) {
-        const newUser = await this.getUser(ctx, userId);
+        let newUser = await this.getUser(ctx, userId);
 
-        if(!newUser) {
-            return;
+        if(newUser) {
+            await this.updateWallet(ctx, newUser.inviterId, 10);
+        } else {
+            newUser = {}
         }
 
         newUser.emailAddr = emailAddr;
         newUser.fullname = fullname;
         newUser.status = 'REGISTERED';
         newUser.wallet = 0;
-
-        const inviterId = newUser.inviterId;
-
-        if(inviterId) {
-            await this.updateWallet(ctx, inviterId, 10);
-        }
 
         await ctx.stub.putState(userId, Buffer.from(JSON.stringify(newUser)));
     }

@@ -97,8 +97,8 @@ do
   sleep 1
 done
 
-echo "Invoke user-management initLedger func"
-peer chaincode invoke -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n $USER_CC_NAME -c '{"function":"initLedger","Args":[]}'
+# echo "Invoke user-management initLedger func"
+# peer chaincode invoke -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n $USER_CC_NAME -c '{"function":"initLedger","Args":[]}'
 
 # # Test chaincode - delete this part afterwards
 # TEST_CC_PATH=$WORKDIR/sample-app

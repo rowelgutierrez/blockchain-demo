@@ -9,22 +9,6 @@ const walletPath = path.join('/', 'var', 'hyperledger', 'wallet');
 exports.UserModel = class UserModel {
     constructor() {}
 
-    // getConnectionProfile = () => {
-    //     let ccpPath = process.env['JSON_CONNECTION_PROFILE'];
-    //     const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
-    //     return JSON.parse(ccpJSON);
-    // }
-
-    // getWallet = async () => {
-    //     const wallet = new FileSystemWallet(walletPath);
-    //     console.log(`Wallet path: ${walletPath}`);
-
-    //     // Check to see if we've already enrolled the user.
-    //     // const userExists = await wallet.exists('user1');
-
-    //     return wallet;
-    // }
-
     gatewayConnect = async () => {
         if (!this.ccp) {
             let ccpPath = process.env['JSON_CONNECTION_PROFILE'];
@@ -79,7 +63,7 @@ exports.UserModel = class UserModel {
             }
         }
         
-        return JSON.parse(result.toString());
+        return result? JSON.parse(result.toString()) : null;
     }
 
     invite = async (userId, emailAddr, fullname, inviterId) => {
