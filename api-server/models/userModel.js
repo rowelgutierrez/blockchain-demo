@@ -48,7 +48,7 @@ exports.UserModel = class UserModel {
 
     get = async (userId) => {
         const gateway = await this.gatewayConnect(this.ccp, this.wallet);
-        const contract = await this.getContract(this.gateway);
+        const contract = await this.getContract(gateway);
 
         const result = await contract.evaluateTransaction('queryUser', userId);
         
@@ -59,7 +59,7 @@ exports.UserModel = class UserModel {
 
     invite = async (userId, emailAddr, fullname, inviterId) => {
         const gateway = await this.gatewayConnect(this.ccp, this.wallet);
-        const contract = await this.getContract(this.gateway);
+        const contract = await this.getContract(gateway);
         
         await contract.submitTransaction('inviteUser', userId, emailAddr, fullname, inviterId);
         
@@ -68,7 +68,7 @@ exports.UserModel = class UserModel {
 
     register = async (userId, emailAddr, fullname) => {
         const gateway = await this.gatewayConnect(this.ccp, this.wallet);
-        const contract = await this.getContract(this.gateway);
+        const contract = await this.getContract(gateway);
         
         await contract.submitTransaction('registerUser', userId, emailAddr, fullname);
         
