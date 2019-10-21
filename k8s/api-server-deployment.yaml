@@ -1,0 +1,42 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: api-server-deployment
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       component: api-server
+#   template:
+#     metadata:
+#       labels:
+#         component: api-server
+#     spec:
+#       volumes:
+#         - name: shared-volume
+#           persistentVolumeClaim:
+#             claimName: shared-pvc
+#       containers:
+#         - name: api-server
+#           image: rowelgutierrez/fabric-api-server:latest
+#           ports:
+#             - containerPort: 8081
+#           resources:
+#             requests:
+#               cpu: 100m
+#               memory: 100Mi
+#             limits:
+#               cpu: 200m
+#               memory: 200Mi
+#           volumeMounts:
+#             - name: shared-volume
+#               mountPath: /var/hyperledger/fabric/peer/config
+#               subPath: config
+#           workingDir: /app
+#           env:
+#             - name: DEV_MODE
+#               value: "true"
+#             - name: JSON_CONNECTION_PROFILE
+#               value: /var/hyperledger/fabric/peer/config/connection.json
+#             - name: JSON_CONNECTION_DIR
+#               value: /var/hyperledger/fabric/peer/config/
