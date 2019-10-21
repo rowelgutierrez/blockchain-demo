@@ -21,7 +21,6 @@ script:
   - docker run -e CI=true rowelgutierrez/fabric-api-server npm run lint
 
 deploy:
-  skip-cleanup: true
   provider: script
   script: bash ./k8-deploy.sh
   on:
