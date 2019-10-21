@@ -13,6 +13,7 @@ COPY . .
 # RUN npm run build
 
 RUN npm install --global eslint
+RUN npm install --global babel-eslint
 RUN npm install --global nodemon
 
 EXPOSE 8081

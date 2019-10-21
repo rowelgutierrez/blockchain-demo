@@ -16,7 +16,7 @@ before-install:
   - gcloud container clusters get-credentials hyperledger-k8
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 script:
-  - docker run -e CI=true rowelgutierrez/fabric-api-server npm install && npm run lint
+  - docker run -e CI=true rowelgutierrez/fabric-api-server npm run lint
 
 deploy:
   provider: script
