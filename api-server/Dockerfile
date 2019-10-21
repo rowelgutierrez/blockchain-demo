@@ -6,14 +6,13 @@ WORKDIR /app
 COPY package.json .
 
 RUN apk add --no-cache make gcc g++ python
-RUN npm install --production --silent
+RUN npm install --silent
 RUN apk del make gcc g++ python
 
 COPY . .
 # RUN npm run build
 
 RUN npm install --global eslint
-RUN npm install --global babel-eslint
 RUN npm install --global nodemon
 
 EXPOSE 8081
