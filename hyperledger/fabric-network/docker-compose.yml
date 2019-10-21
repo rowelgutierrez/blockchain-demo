@@ -99,12 +99,32 @@ services:
     networks:
       - basic
 
+  api-server:
+    container_name: api-server
+    build: 
+      context: ../../api-server/
+    environment:
+      - DEV_MODE=true
+      - JSON_CONNECTION_PROFILE=/var/hyperledger/fabric/peer/config/connection.dev.json
+      - JSON_CONNECTION_DIR=/var/hyperledger/fabric/peer/config/
+    working_dir: /app
+    ports:
+      - 8081:8081
+    volumes:
+        - ../fabric-workspace/config:/var/hyperledger/fabric/peer/config
+        - ./wallet:/var/hyperledger/wallet
+    networks:
+      - basic
+
   cli:
     container_name: cli
     image: hyperledger/fabric-tools:1.4.1
+    # build: 
+    #   context: ../fabric-workspace/
     tty: true
     environment:
       - GOPATH=/opt/gopath
+      # - GOPATH=/var/hyperledger/fabric/peer
       - DEV_MODE=true
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_LOGGING_SPEC=info
@@ -116,24 +136,29 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/peers/peer0.org1.imfreemobile.com/tls/ca.crt
       - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1.imfreemobile.com/users/Admin@org1.imfreemobile.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
-      - CC_SRC_PATH=/var/hyperledger/fabric/peer/chaincode/
+      - CC_SRC_PATH=/opt/gopath/src/github.com
       - JSON_DEV_CONNECTION=/var/hyperledger/fabric/peer/config/connection.dev.json
       - CA_ADDRESS=ca.imfreemobile.com
+      - USER_CC_NAME=userm
+      - WORKDIR=/var/hyperledger/fabric/peer
+      - JSON_CONNECTION_DIR=/var/hyperledger/fabric/peer/config
     working_dir: /var/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
         - ./crypto-config:/var/hyperledger/fabric/peer/crypto-config/
         - ./channel-artifacts:/var/hyperledger/fabric/peer/channel-artifacts
+        - ./wallet:/var/hyperledger/wallet
         # Workspace mount
-        # - ./../fabric-workspace/auth/:/var/hyperledger/fabric/peer/auth
-        # - ./../fabric-workspace/config/:/var/hyperledger/fabric/peer/config
+        - ./../fabric-workspace/auth/:/var/hyperledger/fabric/peer/auth
         # - ./../fabric-workspace/chaincode/:/var/hyperledger/fabric/peer/chaincode
-        # - ./../fabric-workspace/sample-app/:/var/hyperledger/fabric/peer/sample-app
-        # - ./../fabric-workspace/scripts/:/var/hyperledger/fabric/peer/scripts
-        # - ./../fabric-workspace/configtx.yaml:/var/hyperledger/fabric/peer/
-        # - ./../fabric-workspace/crypto-config.yaml:/var/hyperledger/fabric/peer/
-        - ./../fabric-workspace/:/var/hyperledger/fabric/peer
+        - ./../fabric-workspace/config/:/var/hyperledger/fabric/peer/config
+        - ./../fabric-workspace/sample-app/:/var/hyperledger/fabric/peer/sample-app
+        - ./../fabric-workspace/scripts/:/var/hyperledger/fabric/peer/scripts
+        - ./../fabric-network/configtx.yaml:/var/hyperledger/fabric/peer/configtx.yaml
+        - ./../fabric-network/crypto-config.yaml:/var/hyperledger/fabric/peer/crypto-config.yaml
+        # - ./../fabric-workspace/:/var/hyperledger/fabric/peer
+        - ./../fabric-workspace/chaincode/:/opt/gopath/src/github.com/
     networks:
         - basic
     depends_on:

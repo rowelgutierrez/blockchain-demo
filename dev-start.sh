@@ -18,6 +18,9 @@ cd $CA_CERTS_DIR
 export CA1_PRIVATE_KEY=$(ls *_sk)
 mv $CA_CERTS_DIR/$CA1_PRIVATE_KEY $CA_CERTS_DIR/cert_sk
 
+# cd $BASE_DIR/hyperledger/fabric-workspace/chaincode/user-management
+# npm install
+
 # *******************************************
 # ************** Start network **************
 # *******************************************
@@ -29,7 +32,7 @@ export MSYS_NO_PATHCONV=1
 docker-compose down
 
 # docker-compose up -d
-docker-compose -f docker-compose.yml up -d ca.imfreemobile.com orderer.imfreemobile.com peer0.org1.imfreemobile.com couchdb cli
+docker-compose -f docker-compose.yml up -d ca.imfreemobile.com orderer.imfreemobile.com peer0.org1.imfreemobile.com couchdb cli api-server
 docker ps -a
 
 # wait for Hyperledger Fabric to start

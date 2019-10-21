@@ -114,3 +114,5 @@ spec:
               value: /var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1-imfreemobile-com/peers/peer0-org1-imfreemobile-com/tls/ca.crt
             - name: CORE_PEER_MSPCONFIGPATH
               value: /var/hyperledger/fabric/peer/crypto-config/peerOrganizations/org1-imfreemobile-com/users/Admin@org1-imfreemobile-com/msp
+            - name: USER_CC_NAME
+              value: userm

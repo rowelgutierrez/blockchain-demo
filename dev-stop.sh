@@ -1,5 +1,7 @@
 export BASE_DIR=$(pwd)
 
+shopt -s extglob
+
 if [ "$1" = "reset" ]; then
     echo "Deleting certs and artifacts"
 
@@ -10,13 +12,16 @@ if [ "$1" = "reset" ]; then
     rm -rf channel-artifacts/Org1MSPanchors.tx
     rm -rf crypto-config
     rm -rf lock
+    rm -rf wallet/!(.gitkeep)
 
     cd $BASE_DIR/hyperledger/fabric-workspace
-    rm *.block    
+    rm *.block
 fi
 
-cd $BASE_DIR/hyperledger/fabric-network/scripts
+cd $BASE_DIR/hyperledger/fabric-network
 
 docker-compose down -v
+docker container rm $(docker ps -aq)
+docker rmi fabric-network_api-server
 
 cd $BASE_DIR

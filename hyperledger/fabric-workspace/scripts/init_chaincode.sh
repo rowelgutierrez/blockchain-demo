@@ -81,7 +81,7 @@ echo "Installing chaincode node libraries..."
 cd $CC_SRC_PATH/user-management
 npm install
 
-echo "Install chaincode $CC_SRC_PATH/user-management"
+echo "Install chaincode $USER_CC_NAME for $CC_SRC_PATH/user-management"
 
 peer chaincode install -n $USER_CC_NAME -v 1.0 -p "$CC_SRC_PATH/user-management" -l node
 
@@ -97,12 +97,4 @@ do
   sleep 1
 done
 
-echo "Invoke user-management initLedger func"
-peer chaincode invoke -o "$ORDERER_ADDRESS:7050" -C "$USERS_CHANNEL" -n $USER_CC_NAME -c '{"function":"initLedger","Args":[]}'
-
-# Test chaincode - delete this part afterwards
-TEST_CC_PATH=$WORKDIR/sample-app
-cd $TEST_CC_PATH
-npm install
-node query.js
-# Test chaincode -- ENDENDENDENDENDEND
+echo "Done"
