@@ -12,8 +12,8 @@ before-install:
   - gcloud components update kubectl
   - gcloud auth activate-service-account --key-file service-account.json
   - gcloud config set project hyperledger-k8
-  - gcloud config set compute/zone <replace-with-location>
-  - gcloud container clusters get-credentials <cluster-name>
+  - gcloud config set compute/zone asia-southeast1-a
+  - gcloud container clusters get-credentials hyperledger-k8
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t rowelgutierrez/fabric-api-server -f ./api-server/Dockerfile ./api-server
 script:
