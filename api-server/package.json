@@ -8,9 +8,9 @@
     },
     "scripts": {
         "start": "node index.js",
-        "lint": "./node_modules/.bin/eslint .",
+        "lint": "test --passWithNoTests",
         "pretest": "npm run lint",
-        "test": "nyc mocha --recursive"
+        "test": "test --passWithNoTests"
     },
     "engineStrict": true,
     "author": "Hyperledger",
