@@ -3,7 +3,7 @@ const { getUser, inviteUser, registerUser } = require('../controllers/userContro
 
 const router = express.Router();
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', async (req, res) => {
     const user = await getUser(req.params.id);
     res.setHeader('Content-Type', 'application/json');
 
@@ -16,7 +16,7 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-router.post('/invite', async (req, res, next) => {
+router.post('/invite', async (req, res) => {
     const user = {
         id: req.body.id,
         emailAddr: req.body.emailAddr,
@@ -30,7 +30,7 @@ router.post('/invite', async (req, res, next) => {
     res.status(200).json({message: 'User successfully invited'});
 });
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', async (req, res) => {
     const user = {
         id: req.body.id,
         emailAddr: req.body.emailAddr,
