@@ -15,10 +15,8 @@ before-install:
   - gcloud config set compute/zone asia-southeast1-a
   - gcloud container clusters get-credentials hyperledger-k8
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - npm install -g eslint
-  - docker build -t rowelgutierrez/fabric-api-server -f ./api-server/Dockerfile ./api-server
 script:
-  - docker run -e CI=true rowelgutierrez/fabric-api-server npm run lint
+  - docker run -e CI=true rowelgutierrez/fabric-api-server npm install && npm run lint
 
 deploy:
   provider: script
