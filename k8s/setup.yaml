@@ -1,3 +1,75 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    connection.json: |
+      {
+          "name": "imfree-network",
+          "version": "1.0.0",
+          "client": {
+              "organization": "Org1",
+              "connection": {
+                  "timeout": {
+                      "peer": {
+                          "endorser": "300"
+                      },
+                      "orderer": "300"
+                  }
+              }
+          },
+          "channels": {
+              "userschannel": {
+                  "orderers": [
+                      "orderer-imfreemobile-com"
+                  ],
+                  "peers": {
+                      "peer0-org1-imfreemobile-com": {}
+                  }
+              }
+          },
+          "organizations": {
+              "Org1": {
+                  "mspid": "Org1MSP",
+                  "peers": [
+                      "peer0-org1-imfreemobile-com"
+                  ],
+                  "certificateAuthorities": [
+                      "ca-imfreemobile-com"
+                  ]
+              }
+          },
+          "orderers": {
+              "orderer-imfreemobile-com": {
+                  "url": "grpc://orderer-imfreemobile-com:7050"
+              }
+          },
+          "peers": {
+              "peer0-org1-imfreemobile-com": {
+                  "url": "grpc://peer0-org1-imfreemobile-com:7051"
+              }
+          },
+          "certificateAuthorities": {
+              "ca-imfreemobile-com": {
+                  "url": "http://ca-imfreemobile-com:7054",
+                  "caName": "ca-imfreemobile-com"
+              }
+          }
+      }
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2019-10-21T07:18:25Z"
+    name: config
+    namespace: default
+    resourceVersion: "11762"
+    selfLink: /api/v1/namespaces/default/configmaps/connection.json
+    uid: 26ccaebd-484c-4dd4-a75c-ca42cdb2c39c
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
+
+---
+
 # Since we're still deploying to a single node/server, we're using hostPath here.
 apiVersion: v1
 kind: PersistentVolume
@@ -45,10 +117,13 @@ spec:
         - name: shared-volume
           persistentVolumeClaim:
             claimName: shared-pvc
+        - name: config-volume
+          configMap:
+            name: config
       containers:
         - name: cli
           image: rowelgutierrez/fabric-workspace:latest
-          imagePullPolicy: Always
+          # imagePullPolicy: Always
           tty: true
           workingDir: /var/hyperledger/fabric/peer
           resources:
@@ -70,6 +145,12 @@ spec:
             - name: shared-volume
               mountPath: /var/hyperledger/fabric/peer/lock
               subPath: lock
+            - name: config-volume
+              mountPath: /var/hyperledger/fabric/peer/config/connection.json
+              subPath: connection.json
+            - name: shared-volume
+              mountPath: /var/hyperledger/wallet
+              subPath: wallet
             - name: shared-volume
               mountPath: /var/hyperledger/fabric/peer/auth/node_modules
               subPath: auth-node-modules
