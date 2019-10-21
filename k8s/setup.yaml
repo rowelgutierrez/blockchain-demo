@@ -95,7 +95,7 @@ spec:
     matchLabels:
       name: shared-pv
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
